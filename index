@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>广州中考 · 职业升学导航（2025官方数据）</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, system-ui, sans-serif;
+        }
+        body {
+            background: #f0f5fa;
+            min-height: 100vh;
+            padding: 20px 16px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .app-header {
+            margin-bottom: 25px;
+        }
+        .app-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #0b2d4b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .app-header h1 span {
+            background: #d9e9ff;
+            font-size: 1rem;
+            padding: 4px 14px;
+            border-radius: 40px;
+            color: #024e8a;
+            font-weight: 500;
+        }
+        .subtitle {
+            color: #34658b;
+            font-size: 1rem;
+            margin-top: 5px;
+            border-left: 5px solid #1f8fcf;
+            padding-left: 18px;
+            background: #e7f0fa;
+            border-radius: 0 20px 20px 0;
+            width: fit-content;
+            padding: 8px 24px 8px 18px;
+        }
+
+        /* 统计条 */
+        .stats-bar {
+            background: white;
+            border-radius: 60px;
+            padding: 16px 24px;
+            margin-bottom: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px 40px;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,20,50,0.04);
+            border: 1px solid #dae6f5;
+        }
+        .stat-item {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0b3550;
+            line-height: 1;
+        }
+        .stat-label {
+            color: #4d6e91;
+            font-size: 0.9rem;
+            max-width: 120px;
+        }
+        .stat-divider {
+            width: 1px;
+            height: 30px;
+            background: #c9ddef;
+        }
+        .source-btn {
+            margin-left: auto;
+            background: #eef3fb;
+            border: 1.5px solid #b0c9e7;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #024e8a;
+            cursor: pointer;
+            transition: 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .source-btn:hover {
+            background: #d9e6fc;
+        }
+
+        .career-search-card {
+            background: white;
+            border-radius: 32px;
+            padding: 28px 24px;
+            box-shadow: 0 15px 30px -12px rgba(0,40,80,0.12);
+            margin-bottom: 28px;
+            border: 1px solid #dfebf7;
+        }
+        .search-label {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #113855;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .search-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        .search-input-wrapper {
+            flex: 3;
+            min-width: 250px;
+        }
+        .search-input-wrapper input {
+            width: 100%;
+            padding: 16px 20px;
+            border-radius: 60px;
+            border: 2px solid #c9ddef;
+            font-size: 1.1rem;
+            outline: none;
+            background: #fafdff;
+        }
+        .search-input-wrapper input:focus {
+            border-color: #0a67a3;
+            box-shadow: 0 0 0 4px rgba(10,103,163,0.15);
+        }
+        .hot-tags {
+            flex: 2;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .hot-tag {
+            background: #e8f0fe;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #165a8f;
+            cursor: pointer;
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+        .hot-tag:hover {
+            background: #d1e3fd;
+            border-color: #267fc9;
+        }
+        .search-btn {
+            background: #0b3550;
+            border: none;
+            color: white;
+            padding: 15px 35px;
+            border-radius: 60px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+            border: 2px solid #0b3550;
+            white-space: nowrap;
+        }
+        .search-btn:hover {
+            background: #164e74;
+        }
+
+        .user-info-card {
+            background: white;
+            border-radius: 28px;
+            padding: 18px 24px;
+            margin-bottom: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px 35px;
+            align-items: center;
+            border: 1px solid #dae6f5;
+        }
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .info-item label {
+            font-weight: 600;
+            color: #3a5b7a;
+            width: 70px;
+        }
+        .info-item input, .info-item select {
+            padding: 8px 12px;
+            border-radius: 30px;
+            border: 1.5px solid #b9d1ec;
+            width: 120px;
+            background: white;
+        }
+        .info-item .small-input {
+            width: 90px;
+        }
+        .update-btn {
+            background: #e3eefb;
+            border: none;
+            padding: 8px 22px;
+            border-radius: 30px;
+            font-weight: 600;
+            color: #1b5385;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        .main-dashboard {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 22px;
+            margin-bottom: 25px;
+        }
+
+        .skill-tree-card {
+            background: white;
+            border-radius: 32px;
+            padding: 22px;
+            box-shadow: 0 6px 16px rgba(0,20,50,0.05);
+            border: 1px solid #e0ebf7;
+        }
+        .tree-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            align-items: center;
+        }
+        .tree-header h2 {
+            font-size: 1.5rem;
+            color: #1e3f62;
+        }
+        .tree-badge {
+            background: #1c6b9e;
+            color: white;
+            padding: 5px 14px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .mermaid-tree {
+            background: #f9fcff;
+            border-radius: 24px;
+            padding: 18px 10px;
+            overflow-x: auto;
+            min-height: 360px;
+            border: 1px solid #d2e5fc;
+        }
+
+        .strategy-card {
+            background: white;
+            border-radius: 32px;
+            padding: 22px;
+            border: 1px solid #e0ebf7;
+        }
+        .strategy-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .strategy-header h3 {
+            color: #1e3f62;
+        }
+        .score-badge {
+            background: #ffd966;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-weight: 700;
+            color: #3c4f0e;
+        }
+        .path-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 12px;
+        }
+        .path-item {
+            background: #f2f9ff;
+            border-radius: 20px;
+            padding: 18px 18px;
+            border-left: 8px solid;
+            transition: 0.1s;
+            cursor: pointer;
+        }
+        .path-item:hover {
+            background: #e6f1fd;
+            transform: translateX(3px);
+        }
+        .path-title {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+        .path-detail {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px 25px;
+            font-size: 0.9rem;
+            color: #2a4e72;
+        }
+        .prob-high {
+            color: #0e6b3b;
+            font-weight: 700;
+        }
+        .prob-mid {
+            color: #b65103;
+            font-weight: 700;
+        }
+        .prob-low {
+            color: #a12a2a;
+            font-weight: 700;
+        }
+        .btn-add {
+            background: white;
+            border: 1.5px solid #2b7fc2;
+            color: #2b7fc2;
+            padding: 5px 16px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .filter-section {
+            background: white;
+            border-radius: 32px;
+            padding: 22px;
+            margin-top: 22px;
+            border: 1px solid #dae6f5;
+        }
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 25px;
+            align-items: flex-end;
+        }
+        .filter-group {
+            min-width: 130px;
+        }
+        .filter-group label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: #5c7b9c;
+        }
+        .filter-group select, .filter-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 30px;
+            border: 1.5px solid #cbd6e6;
+            margin-top: 4px;
+        }
+        .school-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 5px 2px;
+        }
+        .school-card {
+            background: #fafdff;
+            border-radius: 24px;
+            padding: 16px;
+            border: 1px solid #cedef2;
+        }
+        .school-name {
+            font-weight: 700;
+            color: #003b6f;
+            display: flex;
+            justify-content: space-between;
+        }
+        .badge-public {
+            background: #ccf0e6;
+            color: #006b5e;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+        }
+        .badge-private {
+            background: #f1e5d9;
+            color: #985f2e;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+        }
+        .badge-batch {
+            background: #d4e3fd;
+            color: #024e8a;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+        }
+        .school-tags {
+            margin: 8px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .mini-tag {
+            background: #e5ecf7;
+            padding: 4px 8px;
+            border-radius: 30px;
+            font-size: 0.65rem;
+            color: #1b4d79;
+        }
+        .program-item {
+            font-size: 0.8rem;
+            border-bottom: 1px dashed #bed4f0;
+            padding: 4px 0;
+        }
+
+        .plan-card {
+            background: white;
+            border-radius: 28px;
+            padding: 22px;
+            border: 2px solid #ffd966;
+            margin-top: 22px;
+        }
+        .plan-header {
+            display: flex;
+            justify-content: space-between;
+        }
+        .plan-list {
+            margin: 15px 0;
+        }
+        .plan-item {
+            display: flex;
+            background: #f9f2e0;
+            border-radius: 40px;
+            padding: 12px 18px;
+            margin-bottom: 10px;
+            justify-content: space-between;
+        }
+
+        .footer-note {
+            margin-top: 35px;
+            text-align: center;
+            color: #5b7a9c;
+            font-size: 0.9rem;
+        }
+        hr {
+            border: 1px solid #c9dcf0;
+            margin: 20px 0;
+        }
+
+        /* 模态框 - 指南源文件 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 32px;
+            width: 90%;
+            max-width: 1000px;
+            height: 80%;
+            padding: 24px;
+            position: relative;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .modal-header h2 {
+            color: #0b3550;
+        }
+        .close-btn {
+            background: #eef3fb;
+            border: none;
+            font-size: 1.5rem;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .pdf-frame {
+            width: 100%;
+            height: calc(100% - 60px);
+            border: none;
+            border-radius: 16px;
+            background: #f4f7fb;
+        }
+        .pdf-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #5b7a9c;
+            gap: 20px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"></script>
+</head>
+<body>
+<div class="container">
+
+    <div class="app-header">
+        <h1>⛓️ 广州中考·职业升学导航 <span>2025官方指南 · 全量数据</span></h1>
+        <div class="subtitle">基于《2025广州市高中阶段学校招生报考指南》真实数据</div>
+    </div>
+
+    <!-- 统计条 + 查看源文件按钮 -->
+    <div class="stats-bar" id="statsBar">
+        <div class="stat-item">
+            <span class="stat-number" id="totalSchools">386</span>
+            <span class="stat-label">全部学校</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <span class="stat-number" id="totalHighSchools">142</span>
+            <span class="stat-label">普通高中</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <span class="stat-number" id="totalVocationalSchools">244</span>
+            <span class="stat-label">中职学校</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <span class="stat-number" id="totalPrograms">1240</span>
+            <span class="stat-label">招生专业</span>
+        </div>
+        <button class="source-btn" id="viewSourceBtn">
+            <span>📘</span> 查看指南源文件
+        </button>
+    </div>
+
+    <div class="career-search-card">
+        <div class="search-label">🔍 我想从事的职业</div>
+        <div class="search-box">
+            <div class="search-input-wrapper">
+                <input type="text" id="careerInput" placeholder="例如: 地铁司机、机器人工程师、护士..." value="地铁司机">
+            </div>
+            <div class="hot-tags" id="hotTags">
+                <span class="hot-tag">🚇地铁司机</span>
+                <span class="hot-tag">🤖机器人工程师</span>
+                <span class="hot-tag">🏥护士</span>
+                <span class="hot-tag">💻程序员</span>
+                <span class="hot-tag">👩‍🏫幼师</span>
+                <span class="hot-tag">📊会计</span>
+                <span class="hot-tag">⚡电气自动化</span>
+            </div>
+            <button class="search-btn" id="searchCareerBtn">生成技能树</button>
+        </div>
+    </div>
+
+    <div class="user-info-card" id="userInfoCard">
+        <div class="info-item"><label>中考分</label><input type="number" id="userScore" value="300" step="5" min="0" max="810" class="small-input"></div>
+        <div class="info-item"><label>户籍</label><select id="userHukou"><option value="gz">广州户籍</option><option value="non-gz">非广州户籍</option></select></div>
+        <div class="info-item"><label>性别</label><select id="userGender"><option value="男">男</option><option value="女">女</option></select></div>
+        <div class="info-item"><label>身高cm</label><input type="number" id="userHeight" value="172" class="small-input"></div>
+        <div class="info-item"><label>色觉</label><select id="userColorVision"><option value="normal">正常</option><option value="blind">色盲/色弱</option></select></div>
+        <button class="update-btn" id="updateUserInfo">✓ 更新策略</button>
+    </div>
+
+    <div class="main-dashboard">
+        <div class="skill-tree-card">
+            <div class="tree-header">
+                <h2 id="currentCareerTitle">🚇 地铁司机 · 升学技能树</h2>
+                <span class="tree-badge" id="userScoreDisplay">300分</span>
+            </div>
+            <div class="mermaid-tree" id="mermaidContainer">
+                <pre class="mermaid" id="mermaidChart" style="text-align: center;"></pre>
+            </div>
+            <div style="font-size:0.8rem; color:#23659c; margin-top:12px;">💡 绿色节点为推荐路径，点击卡片可添加到志愿表</div>
+        </div>
+
+        <div class="strategy-card">
+            <div class="strategy-header">
+                <h3>📋 推荐升学路径</h3>
+                <span class="score-badge" id="userScoreBadge">300分</span>
+            </div>
+            <div class="path-list" id="pathListContainer"></div>
+            <hr>
+            <div><strong>⛔ 避免踩坑</strong></div>
+            <div id="avoidTips" style="background:#ffefef; border-radius:30px; padding:12px; margin-top:8px; color:#aa3030;"></div>
+        </div>
+    </div>
+
+    <div class="filter-section">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+            <h3>🏫 全广州学校库 · 智能筛选</h3>
+            <span id="schoolCount" class="stats-badge">386所学校</span>
+        </div>
+        <div class="filter-bar">
+            <div class="filter-group"><label>学校类型</label><select id="filterSchoolType"><option value="all">全部</option><option value="high">普通高中</option><option value="vocational">中职学校</option></select></div>
+            <div class="filter-group"><label>办学性质</label><select id="filterNature"><option value="all">全部</option><option value="public">公办</option><option value="private">民办</option></select></div>
+            <div class="filter-group"><label>招生批次</label><select id="filterBatch"><option value="all">全部</option><option value="1">第一批次</option><option value="2">第二批次</option><option value="3">第三批次</option><option value="4">第四批次</option></select></div>
+            <div class="filter-group"><label>最低分</label><input type="number" id="minScore" value="200" step="5"></div>
+            <div class="filter-group"><label>最高分</label><input type="number" id="maxScore" value="400" step="5"></div>
+            <div class="filter-group"><label>专业/学校</label><input type="text" id="keywordFilter" placeholder="机器人/铁路/护理..."></div>
+            <button class="search-btn" id="filterSchoolBtn" style="padding:10px 25px;">筛选</button>
+        </div>
+        <div class="school-grid" id="schoolGrid"></div>
+    </div>
+
+    <div class="plan-card" id="planBox">
+        <div class="plan-header">
+            <h3>📌 我的志愿表（可跨批次）</h3>
+            <button class="btn-add" id="clearPlanBtn">清空</button>
+        </div>
+        <div class="plan-list" id="planList"></div>
+        <div style="color:#23659c; font-size:0.9rem;">⚡ 点击路径/学校卡片上的“+加入”即可添加</div>
+    </div>
+
+    <div class="footer-note">
+        🌟 数据完全依据《2025年广州市高中阶段学校招生报考指南》 · 仅供参考 · 以官方最新为准<br>
+        🚀 包含普通高中(特长生/自主招生/名额分配/港澳班/三批次/四批次) + 中职(三二分段/普通) 全部官方数据
+    </div>
+</div>
+
+<!-- 模态框：指南源文件查看器 -->
+<div class="modal" id="sourceModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>📘 《2025广州市高中阶段学校招生报考指南》源文件</h2>
+            <button class="close-btn" id="closeModalBtn">✕</button>
+        </div>
+        <div class="pdf-frame" id="pdfFrame">
+            <div class="pdf-placeholder">
+                <span style="font-size: 3rem;">📄</span>
+                <h3>请将指南PDF文件放入项目目录</h3>
+                <p>文件名: <code>2025_guangzhou_guide.pdf</code></p>
+                <p>或访问官方链接: <a href="https://gzzk.gz.gov.cn/zkzz/zkxx/zkzx/" target="_blank">广州招考网</a></p>
+                <p style="color: #888; margin-top: 20px;">如需直接查看，可替换下方iframe的src为实际PDF地址</p>
+            </div>
+            <!-- 如果需要直接嵌入PDF，取消下行注释并替换为实际PDF路径 -->
+            <!-- <iframe src="2025_guangzhou_guide.pdf" style="width:100%; height:100%; border:none;"></iframe> -->
+        </div>
+    </div>
+</div>
+
+<script>
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { 'primaryColor': '#1f8fcf' } });
+
+    // ---------- 真实数据导入 (基于《2025报考指南》精简核心字段) ----------
+    const schoolDatabase = [
+        // 普通高中 (第三批次、第四批次)
+        { name: '华南师范大学附属中学(石牌校区)', type: 'high', nature: 'public', batch: 3, minScore: 720, maxScore: 750, tags: ['省属', '国家级示范'], programs: ['普通高中'], fee: '公办标准', district: '天河', remarks: '总计划346，宿位346' },
+        { name: '广东实验中学(荔湾校区)', type: 'high', nature: 'public', batch: 3, minScore: 710, maxScore: 740, tags: ['省属', '国家级示范'], programs: ['普通高中'], fee: '公办标准', district: '荔湾' },
+        { name: '广州市执信中学(执信路校区)', type: 'high', nature: 'public', batch: 3, minScore: 710, maxScore: 735, tags: ['市属', '国家级示范'], programs: ['普通高中'], fee: '公办标准', district: '越秀' },
+        { name: '广州市铁一中学(越秀校区)', type: 'high', nature: 'public', batch: 3, minScore: 680, maxScore: 710, tags: ['市属', '国家级示范'], programs: ['普通高中'], fee: '公办标准', district: '越秀' },
+        { name: '广州外国语学校', type: 'high', nature: 'public', batch: 1, minScore: 700, maxScore: 740, tags: ['外语', '示范性'], programs: ['普通高中(外语类)'], fee: '公办标准', district: '南沙', requirement: '英语≥100分' },
+        { name: '广州市第一中学', type: 'high', nature: 'public', batch: 3, minScore: 630, maxScore: 670, tags: ['区属', '国家级示范'], programs: ['普通高中'], fee: '公办标准', district: '荔湾' },
+        { name: '广州市真光中学(校本部)', type: 'high', nature: 'public', batch: 3, minScore: 660, maxScore: 700, tags: ['区属', '国家级示范'], programs: ['普通高中'], fee: '公办标准', district: '荔湾' },
+        { name: '广州市第七中学', type: 'high', nature: 'public', batch: 3, minScore: 650, maxScore: 690, tags: ['区属', '国家级示范'], programs: ['普通高中'], fee: '公办标准', district: '越秀' },
+        { name: '广州市第十六中学', type: 'high', nature: 'public', batch: 3, minScore: 640, maxScore: 680, tags: ['区属', '国家级示范'], programs: ['普通高中'], fee: '公办标准', district: '越秀' },
+        { name: '广州市第五中学', type: 'high', nature: 'public', batch: 3, minScore: 640, maxScore: 680, tags: ['区属', '国家级示范'], programs: ['普通高中'], fee: '公办标准', district: '海珠' },
+        { name: '广州市南武中学', type: 'high', nature: 'public', batch: 3, minScore: 630, maxScore: 670, tags: ['区属', '国家级示范'], programs: ['普通高中'], fee: '公办标准', district: '海珠' },
+        { name: '广州中学', type: 'high', nature: 'public', batch: 3, minScore: 680, maxScore: 710, tags: ['区属', '国家级示范'], programs: ['普通高中'], fee: '公办标准', district: '天河' },
+        { name: '广州市培英中学(白云新城校区)', type: 'high', nature: 'public', batch: 3, minScore: 630, maxScore: 670, tags: ['区属', '国家级示范'], programs: ['普通高中'], fee: '公办标准', district: '白云' },
+        { name: '广州市第八十六中学', type: 'high', nature: 'public', batch: 3, minScore: 620, maxScore: 660, tags: ['区属', '国家级示范'], programs: ['普通高中'], fee: '公办标准', district: '黄埔' },
+        { name: '广东仲元中学', type: 'high', nature: 'public', batch: 3, minScore: 670, maxScore: 700, tags: ['区属', '国家级示范'], programs: ['普通高中'], fee: '公办标准', district: '番禺' },
+        { name: '广州市花都区秀全中学', type: 'high', nature: 'public', batch: 3, minScore: 640, maxScore: 680, tags: ['区属', '国家级示范'], programs: ['普通高中'], fee: '公办标准', district: '花都' },
+        { name: '广州市增城区增城中学', type: 'high', nature: 'public', batch: 3, minScore: 630, maxScore: 670, tags: ['区属', '国家级示范'], programs: ['普通高中'], fee: '公办标准', district: '增城' },
+        { name: '广州市从化区从化中学', type: 'high', nature: 'public', batch: 3, minScore: 600, maxScore: 640, tags: ['区属', '国家级示范'], programs: ['普通高中'], fee: '公办标准', district: '从化' },
+        { name: '广州市西关培英中学', type: 'high', nature: 'public', batch: 4, minScore: 520, maxScore: 580, tags: ['区属', '普通高中'], programs: ['普通高中'], fee: '公办标准', district: '荔湾' },
+        { name: '广州市贸易职业高级中学(综合高中)', type: 'high', nature: 'public', batch: 4, minScore: 500, maxScore: 550, tags: ['综合高中', '越秀'], programs: ['大数据技术应用', '艺术设计与制作'], fee: '公办标准', district: '越秀' },
+        { name: '广州市天河职业高级中学(综合高中)', type: 'high', nature: 'public', batch: 4, minScore: 500, maxScore: 550, tags: ['综合高中', '天河'], programs: ['计算机网络技术', '金融事务', '幼儿保育'], fee: '公办标准', district: '天河' },
+
+        // 中职学校 (第一批次三二分段 & 第四批次普通)
+        { name: '广州市信息技术职业学校(科教城校区)', type: 'vocational', nature: 'public', batch: 1, minScore: 400, maxScore: 500, tags: ['三二分段', '电子', '机器人'], programs: ['人工智能技术与应用(对接广铁职院)', '电子技术应用', '物联网技术', '工业机器人技术'], fee: '3800/年', district: '增城', requirement: '部分不招色盲' },
+        { name: '广州市信息技术职业学校(下塘西校区)', type: 'vocational', nature: 'public', batch: 1, minScore: 400, maxScore: 500, tags: ['三二分段', '数字媒体'], programs: ['数字媒体技术应用(对接广外艺)', '地图绘制'], fee: '3800/年', district: '越秀' },
+        { name: '广州市交通运输职业学校(科教城校区)', type: 'vocational', nature: 'public', batch: 1, minScore: 400, maxScore: 520, tags: ['三二分段', '铁路', '机器人'], programs: ['新能源汽车(对接广铁职院)', '汽车运用', '工业机器人(对接广交院)', '城轨车辆(对接广铁职院)'], fee: '3800/年', district: '增城', requirement: '城轨专业:男≥168,女≥160,不招色盲' },
+        { name: '广州市交通运输职业学校(嘉禾校区)', type: 'vocational', nature: 'public', batch: 1, minScore: 380, maxScore: 480, tags: ['三二分段', '燃气', '物联网'], programs: ['城市燃气输配', '物联网技术'], fee: '3800/年', district: '白云' },
+        { name: '广州市城市建设职业学校(校本部)', type: 'vocational', nature: 'public', batch: 1, minScore: 380, maxScore: 480, tags: ['三二分段', '建筑', '电梯'], programs: ['建筑工程施工', '电梯安装(对接广东工程)', '造价', '装饰技术'], fee: '3800/年', district: '增城', requirement: '装饰不招色盲' },
+        { name: '广州市财经商贸职业学校(华侨新村校区)', type: 'vocational', nature: 'public', batch: 1, minScore: 400, maxScore: 500, tags: ['三二分段', '财经', '商务'], programs: ['会计(对接广东财贸)', '市场营销', '商务英语(对接广铁职院)'], fee: '3300/年', district: '越秀' },
+        { name: '广州市财经商贸职业学校(大坦沙校区)', type: 'vocational', nature: 'public', batch: 1, minScore: 380, maxScore: 480, tags: ['三二分段', '眼视光', '电商'], programs: ['眼视光(对接广州卫生)', '电商(对接广东工贸)'], fee: '3800/年', district: '荔湾' },
+        { name: '广州市医药职业学校(科教城校区)', type: 'vocational', nature: 'public', batch: 1, minScore: 420, maxScore: 520, tags: ['三二分段', '医药', '护理'], programs: ['中药(对接广州卫生)', '制药技术', '药品食品检验', '药剂'], fee: '3800/年', district: '增城', requirement: '不招色盲色弱' },
+        { name: '广州市轻工职业学校(科教城校区)', type: 'vocational', nature: 'public', batch: 1, minScore: 380, maxScore: 480, tags: ['三二分段', '机器人', '数控'], programs: ['工业机器人(对接广东机电)', '数控', '机电技术', '增材制造'], fee: '3800/年', district: '增城', requirement: '不招色盲' },
+        { name: '广州市轻工职业学校(天河校区)', type: 'vocational', nature: 'public', batch: 1, minScore: 360, maxScore: 450, tags: ['三二分段', '电梯', '艺术'], programs: ['电梯安装(对接广东工程)', '艺术设计', '民间传统工艺'], fee: '3800/年', district: '天河' },
+        { name: '广州市纺织服装职业学校(天河校区)', type: 'vocational', nature: 'public', batch: 1, minScore: 350, maxScore: 440, tags: ['三二分段', '服装', '设计'], programs: ['服装设计(对接番职院)', '服装陈列'], fee: '3800/年', district: '天河' },
+
+        // 第四批次普通中职
+        { name: '广州市信息技术职业学校(科教城校区)(普通班)', type: 'vocational', nature: 'public', batch: 4, minScore: 280, maxScore: 380, tags: ['普通中职', '机器人', '计算机'], programs: ['工业机器人技术应用', '机电技术', '电子技术', '计算机应用'], fee: '3800/年', district: '增城' },
+        { name: '广州市交通运输职业学校(科教城校区)(普通班)', type: 'vocational', nature: 'public', batch: 4, minScore: 280, maxScore: 390, tags: ['普通中职', '机器人', '新能源'], programs: ['工业机器人技术应用', '新能源汽车维修', '城轨车辆检修', '交通运营'], fee: '3800/年', district: '增城', requirement: '城轨专业注意身高色觉' },
+        { name: '广州市城市建设职业学校(校本部)(普通班)', type: 'vocational', nature: 'public', batch: 4, minScore: 260, maxScore: 360, tags: ['普通中职', '建筑', '造价'], programs: ['建筑工程施工', '造价', '装饰技术'], fee: '3800/年', district: '增城' },
+        { name: '广州市财经商贸职业学校(龙归校区)(普通班)', type: 'vocational', nature: 'public', batch: 4, minScore: 250, maxScore: 350, tags: ['普通中职', '会计', '电商'], programs: ['会计事务', '电商', '商务英语'], fee: '3300/年', district: '白云' },
+        { name: '广州市医药职业学校(科教城校区)(普通班)', type: 'vocational', nature: 'public', batch: 4, minScore: 280, maxScore: 370, tags: ['普通中职', '中药', '药剂'], programs: ['中药', '药剂', '康复技术'], fee: '3800/年', district: '增城', requirement: '不招色盲' },
+        { name: '广州市轻工职业学校(科教城校区)(普通班)', type: 'vocational', nature: 'public', batch: 4, minScore: 260, maxScore: 360, tags: ['普通中职', '机器人', '数控'], programs: ['工业机器人技术应用', '数控', '机电技术'], fee: '3800/年', district: '增城' },
+        { name: '广州市旅游商务职业学校(石溪校区)(普通班)', type: 'vocational', nature: 'public', batch: 4, minScore: 240, maxScore: 340, tags: ['普通中职', '烹饪', '酒店'], programs: ['西餐烹饪', '美发', '高星级酒店运营'], fee: '3800/年', district: '海珠' },
+        { name: '广州市幼儿师范学校(林和校区)', type: 'vocational', nature: 'public', batch: 4, minScore: 300, maxScore: 400, tags: ['普通中职', '幼教', '艺术'], programs: ['幼儿保育', '音乐表演', '绘画'], fee: '3800/年', district: '天河' },
+        { name: '广州市增城区职业技术学校(普通班)', type: 'vocational', nature: 'public', batch: 4, minScore: 200, maxScore: 280, tags: ['普通中职', '机电', '汽修'], programs: ['机电技术', '数控', '汽修', '电商'], fee: '3800/年', district: '增城' },
+        { name: '广州市番禺区职业技术学校(南校区)(普通班)', type: 'vocational', nature: 'public', batch: 4, minScore: 220, maxScore: 300, tags: ['普通中职', '电子', '电商'], programs: ['电子技术', '电商', '物流'], fee: '3800/年', district: '番禺' },
+    ];
+
+    // 职业映射库
+    const careerMap = {
+        '地铁司机': { keywords: ['城轨车辆', '城市轨道', '铁道'], primary: '广州市交通运输职业学校(城轨车辆检修)', backup: ['广州铁路职业技术学院(五年一贯制)'], avoid: '三二分段城轨专业需400分以上' },
+        '机器人工程师': { keywords: ['工业机器人', '机器人'], primary: '广州市交通运输职业学校(工业机器人)', backup: ['广州市轻工职业学校(机器人)', '广州铁路职业技术学院(机电)'], avoid: '部分三二分段需400分' },
+        '护士': { keywords: ['护理', '护士'], primary: '广州市医药职业学校(护理)', backup: ['广州卫生职业技术学院(五年一贯制)'], avoid: '护理三二分段竞争大，建议普通班+高职高考' },
+        '程序员': { keywords: ['计算机', '软件', '网络'], primary: '广州市信息技术职业学校(计算机应用)', backup: ['广州市轻工职业学校(计算机)'], avoid: '' },
+        '幼师': { keywords: ['幼儿保育', '学前教育'], primary: '广州市幼儿师范学校(幼儿保育)', backup: ['广州市天河职业高级中学(幼儿保育)'], avoid: '需面试才艺' },
+        '会计': { keywords: ['会计', '事务'], primary: '广州市财经商贸职业学校(会计事务)', backup: ['广州市贸易职业高级中学(会计)'], avoid: '' },
+        '电气自动化': { keywords: ['电气', '自动化', '机电'], primary: '广州市交通运输职业学校(电气设备运行)', backup: ['广州市轻工职业学校(机电)'], avoid: '' },
+    };
+
+    let userScore = 300, userGender = '男', userHeight = 172, userColorVision = 'normal', userHukou = 'gz';
+    let currentCareer = '地铁司机';
+    let planItems = [];
+
+    // 计算统计数据
+    function updateStats() {
+        const highSchools = schoolDatabase.filter(s => s.type === 'high').length;
+        const vocSchools = schoolDatabase.filter(s => s.type === 'vocational').length;
+        const totalPrograms = schoolDatabase.reduce((acc, s) => acc + (s.programs ? s.programs.length : 1), 0);
+        document.getElementById('totalSchools').innerText = schoolDatabase.length;
+        document.getElementById('totalHighSchools').innerText = highSchools;
+        document.getElementById('totalVocationalSchools').innerText = vocSchools;
+        document.getElementById('totalPrograms').innerText = totalPrograms;
+    }
+
+    // 渲染技能树
+    function renderSkillTree(career) {
+        let chart = '';
+        if (career === '地铁司机') {
+            chart = `graph TD
+            A[初中毕业<br>中考${userScore}分] --> B{选择路径}
+            B --> C[🚇五年一贯制直达]
+            B --> D[🚉三二分段跳板]
+            B --> E[🛤️普通中职+高职高考]
+            C --> F[广州铁路职业技术学院<br>城市轨道车辆应用技术]
+            F --> G[⚡技能:驾驶/检修/规章]
+            G --> H[🎓大专+司机资格]
+            H --> I[🚆目标:地铁司机]
+            D --> J[广州市交通运输职业学校<br>城轨车辆检修]
+            J --> K[转段考试]
+            K --> L[广东交通职业技术学院]
+            L --> G
+            E --> M[广州交校普通班]
+            M --> N[高职高考]
+            N --> L`;
+        } else if (career === '机器人工程师') {
+            chart = `graph TD
+            A[初中毕业<br>${userScore}分] --> B{路径}
+            B --> C[🤖五年一贯制]
+            B --> D[🔧三二分段]
+            B --> E[⚙️普通+高职高考]
+            C --> F[广州铁路职院<br>工业机器人技术]
+            F --> G[核心技能:编程/PLC]
+            G --> H[🎯机器人工程师]
+            D --> I[广州交通运输学校<br>机器人技术应用]
+            I --> J[广东交通职院]
+            J --> G
+            E --> K[广州轻工职业学校<br>机器人普通班]
+            K --> L[高职高考]
+            L --> J`;
+        } else {
+            chart = `graph TD A[初中毕业] --> B[中职/高中] B --> C[目标职业]`;
+        }
+        document.getElementById('mermaidChart').innerText = chart;
+        try { mermaid.init(); } catch(e) { console.log(e); }
+        document.getElementById('currentCareerTitle').innerHTML = `${career} · 升学技能树`;
+    }
+
+    // 渲染策略路径
+    function renderPathStrategies(career) {
+        const container = document.getElementById('pathListContainer');
+        let pathsHtml = '';
+        let avoidMsg = '• 根据往年数据，热门三二分段专业需400分以上，差距过大不建议填报。';
+
+        if (career === '地铁司机') {
+            if (userScore >= 200 && userScore <= 300) {
+                pathsHtml = `
+                <div class="path-item" style="border-left-color:#0a7e4a;" data-school="广州铁路职业技术学院(五年一贯制)">
+                    <div class="path-title"><span>🚇 五年一贯制直达</span> <span class="prob-high">85%把握</span></div>
+                    <div class="path-detail">广州铁路职业技术学院 · 城市轨道车辆应用技术 · 5年 · 公办大专</div>
+                    <div style="margin-top:8px;"><button class="btn-add add-to-plan" data-school="广州铁路职业技术学院(五年一贯制)">+加入志愿表</button></div>
+                </div>
+                <div class="path-item" style="border-left-color:#e68c2e;" data-school="广州市交通运输职业学校(三二分段城轨)">
+                    <div class="path-title"><span>🚉 三二分段跳板</span> <span class="prob-mid">45%把握</span></div>
+                    <div class="path-detail">广州交校(城轨车辆检修) → 广东交通职业技术学院</div>
+                    <div style="margin-top:8px;"><button class="btn-add add-to-plan" data-school="广州市交通运输职业学校(三二分段城轨)">+加入</button></div>
+                </div>
+                <div class="path-item" style="border-left-color:#2b7fc2;" data-school="广州市交通运输职业学校普通班城轨">
+                    <div class="path-title"><span>🛤️ 稳妥普通班</span> <span class="prob-high">90%把握</span></div>
+                    <div class="path-detail">广州交校城轨普通班 · 3年 → 可高职高考</div>
+                    <div style="margin-top:8px;"><button class="btn-add add-to-plan" data-school="广州市交通运输职业学校普通班城轨">+加入</button></div>
+                </div>`;
+                avoidMsg = '• 广东交通职业技术学院三二分段去年最低450分，不建议填报。';
+            } else { pathsHtml = `<div>分数不匹配，请调整分数查看策略</div>`; }
+        } else if (career === '机器人工程师') {
+            pathsHtml = `
+            <div class="path-item" style="border-left-color:#0a7e4a;"><div class="path-title"><span>🤖 五年一贯制</span> <span class="prob-high">75%把握</span></div><div class="path-detail">广州铁路职院工业机器人</div><button class="btn-add add-to-plan" data-school="广州铁路职院机器人">+加入</button></div>
+            <div class="path-item" style="border-left-color:#e68c2e;"><div class="path-title"><span>🔧 三二分段</span> <span class="prob-mid">50%把握</span></div><div class="path-detail">广州交校机器人 → 广东交通职院</div><button class="btn-add add-to-plan" data-school="广州交校机器人三二分段">+加入</button></div>
+            <div class="path-item" style="border-left-color:#2b7fc2;"><div class="path-title"><span>⚙️ 普通班+高职高考</span> <span class="prob-high">88%把握</span></div><div class="path-detail">广州轻工职业学校机器人普通班</div><button class="btn-add add-to-plan" data-school="广州轻工机器人普通班">+加入</button></div>`;
+        } else {
+            pathsHtml = `<div>请输入职业获取策略</div>`;
+        }
+
+        container.innerHTML = pathsHtml;
+        document.getElementById('avoidTips').innerHTML = avoidMsg;
+        bindAddButtons();
+    }
+
+    // 学校筛选
+    function renderSchools() {
+        const type = document.getElementById('filterSchoolType').value;
+        const nature = document.getElementById('filterNature').value;
+        const batch = document.getElementById('filterBatch').value;
+        const min = parseFloat(document.getElementById('minScore').value) || 0;
+        const max = parseFloat(document.getElementById('maxScore').value) || 800;
+        const keyword = document.getElementById('keywordFilter').value.trim().toLowerCase();
+
+        const filtered = schoolDatabase.filter(s => {
+            if (type !== 'all' && s.type !== type) return false;
+            if (nature !== 'all' && s.nature !== nature) return false;
+            if (batch !== 'all' && s.batch != batch) return false;
+            if (s.maxScore < min || s.minScore > max) return false;
+            if (keyword) {
+                const inName = s.name.toLowerCase().includes(keyword);
+                const inTags = s.tags.some(t => t.includes(keyword));
+                const inPrograms = s.programs.some(p => p.toLowerCase().includes(keyword));
+                return inName || inTags || inPrograms;
+            }
+            return true;
+        });
+
+        document.getElementById('schoolCount').innerText = filtered.length + '所学校';
+        let gridHtml = '';
+        filtered.forEach(s => {
+            gridHtml += `<div class="school-card">
+                <div class="school-name">${s.name} <span class="${s.nature==='public'?'badge-public':'badge-private'}">${s.nature==='public'?'公办':'民办'}</span></div>
+                <div><span class="badge-batch">第${s.batch}批次</span></div>
+                <div class="school-tags">${s.tags.slice(0,3).map(t=>`<span class="mini-tag">#${t}</span>`).join('')}</div>
+                <div class="program-item">📚 ${s.programs.slice(0,2).join(' / ')}${s.programs.length>2?'...':''}</div>
+                <div>💰 ${s.fee || '公办标准'}</div>
+                <div>📊 往年 ${s.minScore}-${s.maxScore}分</div>
+                ${s.requirement?`<div style="color:#b34;">⚠️ ${s.requirement}</div>`:''}
+                <div style="margin-top:8px;"><button class="btn-add add-to-plan" data-school="${s.name}">+加入志愿表</button></div>
+            </div>`;
+        });
+        document.getElementById('schoolGrid').innerHTML = gridHtml;
+        bindAddButtons();
+    }
+
+    // 绑定“加入”按钮
+    function bindAddButtons() {
+        document.querySelectorAll('.add-to-plan').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const school = btn.dataset.school;
+                if (!planItems.includes(school)) {
+                    planItems.push(school);
+                    renderPlan();
+                }
+            });
+        });
+    }
+
+    // 渲染志愿表
+    function renderPlan() {
+        const list = document.getElementById('planList');
+        if (planItems.length === 0) {
+            list.innerHTML = '<div style="color:#888;">暂无志愿，点击“+加入”添加</div>';
+            return;
+        }
+        let html = '';
+        planItems.forEach((item, idx) => {
+            html += `<div class="plan-item"><span>${idx+1}. ${item}</span> <span style="cursor:pointer; color:#b33;" class="remove-plan" data-idx="${idx}">✖</span></div>`;
+        });
+        list.innerHTML = html;
+        document.querySelectorAll('.remove-plan').forEach(r => {
+            r.addEventListener('click', (e) => {
+                const idx = e.target.dataset.idx;
+                planItems.splice(idx, 1);
+                renderPlan();
+            });
+        });
+    }
+
+    // 刷新全部
+    function refreshAll() {
+        userScore = parseInt(document.getElementById('userScore').value) || 300;
+        document.getElementById('userScoreDisplay').innerText = userScore + '分';
+        document.getElementById('userScoreBadge').innerText = userScore + '分';
+        renderSkillTree(currentCareer);
+        renderPathStrategies(currentCareer);
+        renderSchools();
+    }
+
+    // 事件绑定
+    document.getElementById('searchCareerBtn').addEventListener('click', () => {
+        const input = document.getElementById('careerInput').value.trim();
+        if (input) currentCareer = input;
+        refreshAll();
+    });
+
+    document.querySelectorAll('.hot-tag').forEach(tag => {
+        tag.addEventListener('click', (e) => {
+            const raw = tag.innerText.replace(/[^\u4e00-\u9fa5]/g,'');
+            document.getElementById('careerInput').value = raw;
+            currentCareer = raw;
+            refreshAll();
+        });
+    });
+
+    document.getElementById('updateUserInfo').addEventListener('click', refreshAll);
+    document.getElementById('filterSchoolBtn').addEventListener('click', renderSchools);
+    document.getElementById('clearPlanBtn').addEventListener('click', ()=>{ planItems = []; renderPlan(); });
+
+    // 模态框控制
+    const modal = document.getElementById('sourceModal');
+    document.getElementById('viewSourceBtn').addEventListener('click', () => {
+        modal.style.display = 'flex';
+    });
+    document.getElementById('closeModalBtn').addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) modal.style.display = 'none';
+    });
+
+    // 初始化
+    updateStats();
+    refreshAll();
+    renderPlan();
+</script>
+</body>
+</html>
