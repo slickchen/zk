@@ -3,8 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>广州学校招生查询系统 - 最终优化版</title>
+    <title>广州学校招生查询 - 修复版</title>
     <style>
+        /* 保持原有样式不变，添加一些优化 */
+        .result-card {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .result-card:hover {
+            background: #f0f7ff;
+        }
+        .result-card:active {
+            transform: scale(0.98);
+        }
+        .unknown-badge {
+            background: #95a5a6;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-left: 6px;
+        }
+        .detail-loading {
+            text-align: center;
+            padding: 40px;
+            color: #3498db;
+        }
+        /* 其他样式保持不变... */
         * {
             margin: 0;
             padding: 0;
@@ -192,7 +217,6 @@
             flex: 1;
             overflow-y: auto;
             padding-bottom: 60px;
-            min-height: 60vh;
         }
 
         .result-list {
@@ -207,12 +231,12 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             border: 1px solid #f0f4f9;
             cursor: pointer;
-            transition: transform 0.1s ease;
+            transition: all 0.2s;
         }
 
         .result-card:active {
             transform: scale(0.98);
-            background: #f8fafc;
+            background: #f0f7ff;
         }
 
         .card-header {
@@ -229,15 +253,6 @@
             display: flex;
             align-items: center;
             gap: 4px;
-        }
-
-        .unknown-badge {
-            background: #95a5a6;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            margin-left: 6px;
         }
 
         .batch-badge {
@@ -593,25 +608,36 @@
                         // 确保数据是数组
                         const items = Array.isArray(data) ? data : [];
                         
-                        // 标准化数据格式
-                        const batchData = items.map(item => ({
-                            // 简化字段名（与可工作版本保持一致）
-                            批次: file.batch,
-                            学校: item['学校名称'] || '未知',
-                            学校类型: item['学校类型'] || '未知',
-                            所在区域: item['所在区域'] || '未知',
-                            专业: item['项目/专业'] || '未知',
-                            招生计划: item['招生计划'] || '0',
-                            录取要求: item['录取要求'] || '无',
-                            住宿情况: item['住宿情况'] || '未知',
-                            联系电话: item['联系电话'] || '暂无',
-                            备注: item['备注'] || '',
+                        // 标准化数据格式 - 使用多种可能的字段名
+                        const batchData = items.map(item => {
+                            // 尝试多种可能的字段名
+                            const schoolName = item['学校名称'] || item['学校'] || item['schoolName'] || '未知';
+                            const region = item['所在区域'] || item['区域'] || item['region'] || '未知';
+                            const schoolType = item['学校类型'] || item['类型'] || item['schoolType'] || '未知';
+                            const major = item['项目/专业'] || item['专业'] || item['major'] || '未知';
+                            const plan = item['招生计划'] || item['计划'] || item['plan'] || '0';
+                            const requirement = item['录取要求'] || item['要求'] || item['requirement'] || '无';
+                            const accommodation = item['住宿情况'] || item['住宿'] || item['accommodation'] || '未知';
+                            const phone = item['联系电话'] || item['电话'] || item['phone'] || '暂无';
+                            const remark = item['备注'] || item['remark'] || '';
                             
-                            // 同时保留原始字段以便兼容
-                            '学校名称': item['学校名称'] || '未知',
-                            '项目/专业': item['项目/专业'] || '未知',
-                            招生批次: file.batch
-                        }));
+                            return {
+                                // 统一使用简洁字段名
+                                批次: file.batch,
+                                学校: schoolName,
+                                学校类型: schoolType,
+                                所在区域: region,
+                                专业: major,
+                                招生计划: plan,
+                                录取要求: requirement,
+                                住宿情况: accommodation,
+                                联系电话: phone,
+                                备注: remark,
+                                
+                                // 添加唯一标识
+                                id: `${schoolName}-${major}-${file.batch}`
+                            };
+                        });
                         
                         this.allData = this.allData.concat(batchData);
                         console.log(`✅ 已加载 ${file.name}: ${batchData.length}条`);
@@ -621,7 +647,7 @@
                     }
                 }
                 
-                // 简单去重（基于学校+专业）
+                // 简单去重
                 const uniqueMap = new Map();
                 this.allData.forEach(item => {
                     const key = `${item.学校}-${item.专业}-${item.批次}`;
@@ -631,6 +657,7 @@
                 });
                 this.allData = Array.from(uniqueMap.values());
                 
+                console.log(`📊 总计加载: ${this.allData.length}条 (去重后)`);
                 return this.allData;
             }
         }
@@ -665,7 +692,6 @@
                 this.filteredData = [...this.data];
                 
                 document.getElementById('headerStats').textContent = `共${this.data.length}条`;
-                console.log('总数据:', this.data.length);
             }
 
             initFilters() {
@@ -748,11 +774,20 @@
 
                 document.querySelectorAll('.nav-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
-                        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                        e.currentTarget.classList.add('active');
                         const tab = e.currentTarget.dataset.tab;
                         this.switchTab(tab);
                     });
+                });
+
+                // 使用事件代理处理卡片点击
+                document.getElementById('resultList').addEventListener('click', (e) => {
+                    const card = e.target.closest('.result-card');
+                    if (card) {
+                        const schoolName = card.dataset.school;
+                        if (schoolName) {
+                            this.showDetail(schoolName);
+                        }
+                    }
                 });
 
                 // 无限滚动
@@ -843,7 +878,7 @@
                     const safeSchoolName = this.encodeData(item.学校);
                     
                     html += `
-                        <div class="result-card" data-school="${safeSchoolName}" onclick="app.showDetail(this.dataset.school)">
+                        <div class="result-card" data-school="${safeSchoolName}">
                             <div class="card-header">
                                 <span class="school-name">
                                     ${this.escapeHtml(item.学校)}
@@ -884,19 +919,35 @@
                 // 解码学校名称
                 const schoolName = encodedSchoolName.replace(/&quot;/g, '"').replace(/&#39;/g, "'");
                 
+                console.log('点击学校:', schoolName);
+                
                 if (!schoolName || schoolName === '未知') {
                     this.showToast('该学校信息暂不完整，无法查看详情');
                     return;
                 }
                 
-                // 查找该学校的所有记录
+                // 查找该学校的所有记录（精确匹配）
                 let items = this.data.filter(item => item.学校 === schoolName);
                 
-                // 如果没找到，尝试模糊匹配
+                console.log('精确匹配记录数:', items.length);
+                
+                // 如果没找到，尝试模糊匹配（处理括号差异）
+                if (items.length === 0) {
+                    // 移除所有括号和空格后比较
+                    const normalizedSearch = schoolName.replace(/[（）()\s]/g, '');
+                    items = this.data.filter(item => {
+                        const normalizedItem = item.学校.replace(/[（）()\s]/g, '');
+                        return normalizedItem === normalizedSearch;
+                    });
+                    console.log('归一化匹配记录数:', items.length);
+                }
+                
+                // 如果还没找到，尝试包含匹配
                 if (items.length === 0) {
                     items = this.data.filter(item => 
                         item.学校 && item.学校.includes(schoolName.replace('（', '(').replace('）', ')'))
                     );
+                    console.log('模糊匹配记录数:', items.length);
                 }
                 
                 if (items.length === 0) {
@@ -905,7 +956,21 @@
                 }
 
                 this.currentDetailSchool = items[0].学校;
-                this.switchTab('detail');
+                
+                // 切换到详情页
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    if (btn.dataset.tab === 'detail') {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+                
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById('tabDetail').classList.add('active');
+                this.currentTab = 'detail';
                 
                 const first = items[0];
                 let majorList = '';
