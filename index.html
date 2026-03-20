@@ -5,9 +5,152 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>广州学校招生查询系统</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icons/icon-192.png">
-    <meta name="theme-color" content="#2c3e50">
+    <style>
+        /* 免责声明样式 */
+        .disclaimer-bar {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px 12px;
+            margin: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #856404;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .disclaimer-icon {
+            font-size: 16px;
+        }
+        
+        .disclaimer-text {
+            flex: 1;
+        }
+        
+        .disclaimer-link {
+            color: #856404;
+            text-decoration: underline;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        
+        /* 免责声明弹窗 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            margin: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: white;
+        }
+        
+        .modal-header h3 {
+            font-size: 18px;
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 0 8px;
+        }
+        
+        .modal-body {
+            padding: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .modal-body h4 {
+            color: #2c3e50;
+            margin: 20px 0 10px;
+            font-size: 16px;
+        }
+        
+        .modal-body h4:first-child {
+            margin-top: 0;
+        }
+        
+        .modal-body p {
+            margin: 10px 0;
+        }
+        
+        .modal-body ul {
+            margin: 10px 0 10px 20px;
+        }
+        
+        .modal-footer {
+            padding: 16px;
+            border-top: 1px solid #dee2e6;
+            text-align: right;
+            background: #f8f9fa;
+        }
+        
+        .modal-footer button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        /* 页脚免责声明 */
+        .footer-disclaimer {
+            text-align: center;
+            padding: 12px;
+            font-size: 11px;
+            color: #999;
+            border-top: 1px solid #eee;
+            margin-top: 20px;
+            background: #f9f9f9;
+        }
+        
+        .footer-disclaimer a {
+            color: #666;
+            text-decoration: none;
+        }
+        
+        .footer-disclaimer a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
@@ -18,6 +161,13 @@
                 <span id="data-count">加载中...</span>
             </div>
         </header>
+
+        <!-- 免责声明栏 -->
+        <div class="disclaimer-bar">
+            <span class="disclaimer-icon">⚠️</span>
+            <span class="disclaimer-text">本系统仅供查询参考，所有数据以官方发布为准</span>
+            <span class="disclaimer-link" onclick="showDisclaimerModal()">查看详情</span>
+        </div>
 
         <!-- 搜索栏 -->
         <div class="search-section">
@@ -99,6 +249,13 @@
             </div>
         </div>
 
+        <!-- 底部免责声明 -->
+        <div class="footer-disclaimer">
+            <a href="#" onclick="showDisclaimerModal(); return false;">免责声明</a> | 
+            数据来源：2025年广州市招生计划 | 
+            <span id="current-year"></span>
+        </div>
+
         <!-- 底部导航 -->
         <nav class="bottom-nav">
             <button class="nav-btn active" data-tab="result">📋 列表</button>
@@ -107,8 +264,84 @@
         </nav>
     </div>
 
+    <!-- 免责声明弹窗 -->
+    <div id="disclaimerModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⚠️ 免责声明</h3>
+                <button class="modal-close" onclick="hideDisclaimerModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h4>1. 数据来源说明</h4>
+                <p>本系统所展示的招生信息来源于广州市教育局官方发布的《2025年广州市高中阶段学校招生报考指南》。所有数据仅供参考，不构成任何形式的承诺或保证。</p>
+                
+                <h4>2. 数据准确性</h4>
+                <p>尽管我们尽力确保数据的准确性和完整性，但招生计划可能会有调整和变更。建议用户以广州市教育局官方发布的最新信息为准，并在填报志愿前咨询相关学校或教育部门。</p>
+                
+                <h4>3. 查询结果说明</h4>
+                <p>本系统的查询结果基于预设的算法和关键词匹配，可能存在以下情况：</p>
+                <ul>
+                    <li>数据更新延迟或不完整</li>
+                    <li>查询结果与实际情况存在差异</li>
+                    <li>部分信息可能存在录入错误</li>
+                </ul>
+                
+                <h4>4. 使用建议</h4>
+                <p>建议用户：</p>
+                <ul>
+                    <li>通过多个渠道核实招生信息</li>
+                    <li>直接联系目标学校确认招生细节</li>
+                    <li>关注广州市教育局官方公告</li>
+                    <li>在填报志愿前仔细阅读官方报考指南</li>
+                </ul>
+                
+                <h4>5. 责任限制</h4>
+                <p>本系统开发者及维护者不对因使用本系统信息而导致的任何直接或间接损失承担责任。用户自行承担使用本系统的全部风险。</p>
+                
+                <h4>6. 知识产权</h4>
+                <p>本系统的源代码和界面设计受版权保护。数据内容的版权归原数据发布机构所有。</p>
+                
+                <h4>7. 免责声明更新</h4>
+                <p>我们保留随时修改本免责声明的权利。继续使用本系统即表示您接受更新后的免责声明。</p>
+                
+                <p style="margin-top: 20px; font-style: italic; color: #666;">最后更新：2025年3月</p>
+            </div>
+            <div class="modal-footer">
+                <button onclick="hideDisclaimerModal()">我已了解</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="js/data-parser.js"></script>
     <script src="js/app.js"></script>
+    <script>
+        // 免责声明弹窗控制
+        function showDisclaimerModal() {
+            document.getElementById('disclaimerModal').classList.add('active');
+        }
+        
+        function hideDisclaimerModal() {
+            document.getElementById('disclaimerModal').classList.remove('active');
+        }
+        
+        // 点击模态框外部关闭
+        document.getElementById('disclaimerModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideDisclaimerModal();
+            }
+        });
+        
+        // 显示当前年份
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        // 首次访问自动显示免责声明（可选）
+        // 可以根据需要取消注释
+        /*
+        if (!localStorage.getItem('disclaimerAccepted')) {
+            setTimeout(showDisclaimerModal, 1000);
+        }
+        */
+    </script>
 </body>
 </html>
