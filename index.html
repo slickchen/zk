@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>广州学校招生查询 - 完整版</title>
+    <title>广州学校招生查询</title>
     <style>
         * {
             margin: 0;
@@ -37,15 +37,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .header h1 {
             font-size: 1.2rem;
             font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
         .header-stats {
@@ -66,7 +62,6 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .search-section {
@@ -88,7 +83,6 @@
             border-radius: 25px;
             font-size: 0.95rem;
             background: #f8fafc;
-            transition: all 0.2s;
         }
 
         .search-input:focus {
@@ -206,7 +200,6 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             border: 1px solid #f0f4f9;
             cursor: pointer;
-            transition: transform 0.1s;
         }
 
         .result-card:active {
@@ -225,7 +218,6 @@
             font-weight: 600;
             font-size: 1rem;
             color: #2c3e50;
-            line-height: 1.4;
         }
 
         .batch-badge {
@@ -243,12 +235,6 @@
             margin-bottom: 6px;
             font-size: 0.8rem;
             color: #718096;
-        }
-
-        .card-info span {
-            display: flex;
-            align-items: center;
-            gap: 4px;
         }
 
         .card-desc {
@@ -309,6 +295,7 @@
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 0.8rem;
+            margin-bottom: 8px;
         }
 
         .detail-section {
@@ -319,9 +306,6 @@
             font-size: 1rem;
             color: #2c3e50;
             margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
         .info-grid {
@@ -359,28 +343,29 @@
         .major-name {
             font-weight: 600;
             color: #2c3e50;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .major-detail {
             font-size: 0.85rem;
             color: #4a5568;
+            margin-bottom: 4px;
         }
 
         .back-btn {
             background: #f0f4f9;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border-radius: 25px;
             font-size: 0.9rem;
             color: #4a5568;
             cursor: pointer;
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            gap: 6px;
-            margin-top: 12px;
-            width: 100%;
             justify-content: center;
+            gap: 6px;
+            margin-top: 20px;
+            width: 100%;
         }
 
         .back-btn:active {
@@ -448,21 +433,6 @@
             to { bottom: 80px; opacity: 1; }
         }
 
-        .skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 8px;
-            height: 80px;
-            margin-bottom: 10px;
-        }
-
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        /* 标签页内容 */
         .tab-content {
             display: none;
         }
@@ -480,7 +450,7 @@
         </div>
 
         <div class="disclaimer">
-            <span class="disclaimer-icon">⚠️</span>
+            <span>⚠️</span>
             <span>数据仅供参考，请以官方发布为准</span>
         </div>
 
@@ -489,7 +459,7 @@
                 <input type="text" id="searchInput" class="search-input" placeholder="输入学校或专业..." autocomplete="off">
                 <button class="search-btn" id="searchBtn">🔍</button>
             </div>
-            <div class="search-type" id="searchType">
+            <div class="search-type">
                 <button class="type-btn active" data-type="school">学校</button>
                 <button class="type-btn" data-type="major">专业</button>
                 <button class="type-btn" data-type="region">区域</button>
@@ -510,64 +480,43 @@
         <div class="toolbar">
             <span class="result-count" id="resultCount">0 条记录</span>
             <button class="export-btn" id="exportBtn">
-                <span>📥</span>
-                导出
+                <span>📥</span> 导出
             </button>
         </div>
 
-        <!-- 标签页容器 -->
         <div class="content-area">
-            <!-- 列表标签页 -->
+            <!-- 列表页 -->
             <div id="tabList" class="tab-content active">
-                <div id="resultList" class="result-list">
-                    <div class="skeleton"></div>
-                    <div class="skeleton"></div>
-                    <div class="skeleton"></div>
-                    <div class="skeleton"></div>
-                    <div class="skeleton"></div>
-                </div>
+                <div id="resultList" class="result-list"></div>
             </div>
 
-            <!-- 详情标签页 -->
+            <!-- 详情页 -->
             <div id="tabDetail" class="tab-content">
-                <div id="detailContent" class="detail-card">
-                    <div class="empty-state">
-                        <div class="emoji">👆</div>
-                        <div>点击搜索结果查看详情</div>
-                    </div>
-                </div>
+                <div id="detailContent"></div>
             </div>
 
-            <!-- 统计标签页 -->
+            <!-- 统计页 -->
             <div id="tabStats" class="tab-content">
-                <div id="statsContent" class="detail-card">
-                    <div class="empty-state">
-                        <div class="emoji">📊</div>
-                        <div>加载统计信息...</div>
-                    </div>
-                </div>
+                <div id="statsContent"></div>
             </div>
         </div>
 
         <div class="bottom-nav">
             <button class="nav-btn active" data-tab="list">
-                <span class="emoji">📋</span>
-                <span>列表</span>
+                <span class="emoji">📋</span> 列表
             </button>
             <button class="nav-btn" data-tab="detail">
-                <span class="emoji">📄</span>
-                <span>详情</span>
+                <span class="emoji">📄</span> 详情
             </button>
             <button class="nav-btn" data-tab="stats">
-                <span class="emoji">📊</span>
-                <span>统计</span>
+                <span class="emoji">📊</span> 统计
             </button>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
-        // ========== 数据加载器 ==========
+        // 数据加载器
         class DataLoader {
             constructor() {
                 this.files = [
@@ -594,23 +543,15 @@
                     try {
                         const response = await fetch(baseUrl + file.name);
                         if (!response.ok) {
-                            console.warn(`加载 ${file.name} 失败: ${response.status}`);
+                            console.warn(`加载 ${file.name} 失败`);
                             continue;
                         }
                         const data = await response.json();
                         
-                        // 标准化字段名
+                        // 直接使用原始字段名，不重命名
                         const batchData = data.map(item => ({
-                            批次: file.batch,
-                            学校: item['学校名称'] || '未知',
-                            学校类型: item['学校类型'] || '未知',
-                            所在区域: item['所在区域'] || '未知',
-                            专业: item['项目/专业'] || '未知',
-                            招生计划: item['招生计划'] || '0',
-                            录取要求: item['录取要求'] || '无',
-                            住宿情况: item['住宿情况'] || '未知',
-                            联系电话: item['联系电话'] || '无',
-                            备注: item['备注'] || ''
+                            ...item,
+                            批次: file.batch
                         }));
                         
                         this.allData = this.allData.concat(batchData);
@@ -625,7 +566,7 @@
             }
         }
 
-        // ========== 应用逻辑 ==========
+        // 应用主逻辑
         class SchoolQueryApp {
             constructor() {
                 this.data = [];
@@ -655,12 +596,13 @@
                 this.filteredData = [...this.data];
                 
                 document.getElementById('headerStats').textContent = `共${this.data.length}条`;
-                console.log(`总数据: ${this.data.length}条`);
+                console.log('总数据:', this.data.length);
+                console.log('样例数据:', this.data[0]);
             }
 
             initFilters() {
                 const batches = [...new Set(this.data.map(item => item.批次).filter(Boolean))];
-                const regions = [...new Set(this.data.map(item => item.所在区域).filter(Boolean))];
+                const regions = [...new Set(this.data.map(item => item['所在区域']).filter(Boolean))];
 
                 const batchSelect = document.getElementById('batchFilter');
                 batches.sort().forEach(batch => {
@@ -681,6 +623,7 @@
 
             bindEvents() {
                 let debounceTimer;
+                
                 document.getElementById('searchInput').addEventListener('input', (e) => {
                     clearTimeout(debounceTimer);
                     debounceTimer = setTimeout(() => {
@@ -735,7 +678,6 @@
 
                 document.getElementById('exportBtn').addEventListener('click', () => this.exportData());
 
-                // 底部导航切换
                 document.querySelectorAll('.nav-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         const tab = e.currentTarget.dataset.tab;
@@ -743,7 +685,6 @@
                     });
                 });
 
-                // 无限滚动（只在列表页生效）
                 window.addEventListener('scroll', () => {
                     if (this.currentTab !== 'list') return;
                     
@@ -763,21 +704,20 @@
             applyFilters() {
                 this.filteredData = this.data.filter(item => {
                     if (this.batchFilter !== 'all' && item.批次 !== this.batchFilter) return false;
-                    if (this.regionFilter !== 'all' && item.所在区域 !== this.regionFilter) return false;
+                    if (this.regionFilter !== 'all' && item['所在区域'] !== this.regionFilter) return false;
                     
                     if (this.searchKeyword) {
                         const keyword = this.searchKeyword.toLowerCase();
                         switch(this.searchType) {
                             case 'school':
-                                if (!item.学校?.toLowerCase().includes(keyword)) return false;
+                                if (!item['学校名称']?.toLowerCase().includes(keyword)) return false;
                                 break;
                             case 'major':
-                                const majorMatch = item.专业?.toLowerCase().includes(keyword);
-                                const remarkMatch = item.备注?.toLowerCase().includes(keyword);
-                                if (!majorMatch && !remarkMatch) return false;
+                                if (!item['项目/专业']?.toLowerCase().includes(keyword) && 
+                                    !item['备注']?.toLowerCase().includes(keyword)) return false;
                                 break;
                             case 'region':
-                                if (!item.所在区域?.toLowerCase().includes(keyword)) return false;
+                                if (!item['所在区域']?.toLowerCase().includes(keyword)) return false;
                                 break;
                             case 'batch':
                                 if (!item.批次?.toLowerCase().includes(keyword)) return false;
@@ -813,28 +753,32 @@
                 let html = '';
                 
                 displayData.forEach(item => {
+                    const schoolName = item['学校名称'] || '未知';
+                    const region = item['所在区域'] || '未知';
+                    const schoolType = item['学校类型'] || '未知';
+                    const major = item['项目/专业'] || '未知';
+                    const plan = item['招生计划'] || '0';
+                    const batch = item.批次 || '未知';
+                    
                     // 简化专业名称
-                    let simpleMajor = item.专业 || '未知';
+                    let simpleMajor = major;
                     if (simpleMajor.includes('【')) {
                         simpleMajor = simpleMajor.split('【')[0].trim();
                     }
                     
-                    // 转义学校名称中的特殊字符
-                    const safeSchoolName = item.学校.replace(/'/g, "\\'");
-                    
                     html += `
-                        <div class="result-card" onclick="app.showDetail('${safeSchoolName}')">
+                        <div class="result-card" onclick="app.showDetail('${schoolName.replace(/'/g, "\\'")}')">
                             <div class="card-header">
-                                <span class="school-name">${this.escapeHtml(item.学校 || '未知')}</span>
-                                <span class="batch-badge">${this.escapeHtml((item.批次 || '').split('(')[0])}</span>
+                                <span class="school-name">${this.escapeHtml(schoolName)}</span>
+                                <span class="batch-badge">${this.escapeHtml(batch.split('(')[0])}</span>
                             </div>
                             <div class="card-info">
-                                <span>📍 ${this.escapeHtml(item.所在区域 || '未知')}</span>
-                                <span>🏫 ${this.escapeHtml((item.学校类型 || '').split(' ')[0] || '未知')}</span>
+                                <span>📍 ${this.escapeHtml(region)}</span>
+                                <span>🏫 ${this.escapeHtml(schoolType.split(' ')[0])}</span>
                             </div>
                             <div class="card-desc">
                                 <span class="major">📖 ${this.escapeHtml(simpleMajor)}</span>
-                                <span class="plan">👥 ${this.escapeHtml(item.招生计划 || '0')}</span>
+                                <span class="plan">👥 ${this.escapeHtml(plan)}</span>
                             </div>
                         </div>
                     `;
@@ -842,8 +786,6 @@
 
                 if (this.filteredData.length > end) {
                     html += `<div class="load-more">下拉加载更多... (${end}/${this.filteredData.length})</div>`;
-                } else if (this.filteredData.length > this.pageSize) {
-                    html += `<div class="load-more">已显示全部 ${this.filteredData.length} 条</div>`;
                 }
                 
                 if (append) {
@@ -854,7 +796,11 @@
             }
 
             showDetail(schoolName) {
-                const items = this.data.filter(item => item.学校 === schoolName);
+                console.log('显示详情:', schoolName);
+                
+                // 查找该学校的所有记录
+                const items = this.data.filter(item => item['学校名称'] === schoolName);
+                
                 if (items.length === 0) {
                     this.showToast('未找到学校详情');
                     return;
@@ -864,25 +810,12 @@
                 this.switchTab('detail');
                 
                 const first = items[0];
-                let majorList = '';
                 
-                items.forEach((item, index) => {
-                    majorList += `
-                        <div class="major-item">
-                            <div class="major-name">${index + 1}. ${this.escapeHtml(item.专业 || '未知')}</div>
-                            <div class="major-detail">📋 计划: ${this.escapeHtml(item.招生计划 || '0')}</div>
-                            <div class="major-detail">📌 要求: ${this.escapeHtml(item.录取要求 || '无')}</div>
-                            ${item.住宿情况 && item.住宿情况 !== '未知' ? `<div class="major-detail">🏠 住宿: ${this.escapeHtml(item.住宿情况)}</div>` : ''}
-                            ${item.联系电话 && item.联系电话 !== '无' ? `<div class="major-detail">📞 电话: ${this.escapeHtml(item.联系电话)}</div>` : ''}
-                            ${item.备注 ? `<div class="major-detail">📝 备注: ${this.escapeHtml(item.备注)}</div>` : ''}
-                        </div>
-                    `;
-                });
-
-                const detailHtml = `
+                // 构建基本信息
+                let basicInfo = `
                     <div class="detail-card">
                         <div class="detail-header">
-                            <h2>${this.escapeHtml(first.学校 || '未知')}</h2>
+                            <h2>${this.escapeHtml(first['学校名称'] || '未知')}</h2>
                             <span class="detail-batch">${this.escapeHtml(first.批次 || '未知')}</span>
                         </div>
                         
@@ -890,56 +823,66 @@
                             <h3>🏫 基本信息</h3>
                             <div class="info-grid">
                                 <span class="info-label">学校类型</span>
-                                <span class="info-value">${this.escapeHtml(first.学校类型 || '未知')}</span>
+                                <span class="info-value">${this.escapeHtml(first['学校类型'] || '未知')}</span>
                                 <span class="info-label">所在区域</span>
-                                <span class="info-value">${this.escapeHtml(first.所在区域 || '未知')}</span>
+                                <span class="info-value">${this.escapeHtml(first['所在区域'] || '未知')}</span>
                                 <span class="info-label">联系电话</span>
-                                <span class="info-value">${this.escapeHtml(first.联系电话 || '暂无')}</span>
+                                <span class="info-value">${this.escapeHtml(first['联系电话'] || '暂无')}</span>
                                 <span class="info-label">住宿情况</span>
-                                <span class="info-value">${this.escapeHtml(first.住宿情况 || '暂无')}</span>
+                                <span class="info-value">${this.escapeHtml(first['住宿情况'] || '暂无')}</span>
                             </div>
                         </div>
 
                         <div class="detail-section">
                             <h3>📚 招生项目 (${items.length})</h3>
                             <div class="major-list">
-                                ${majorList}
+                `;
+                
+                // 列出所有招生项目
+                items.forEach((item, index) => {
+                    basicInfo += `
+                        <div class="major-item">
+                            <div class="major-name">${index + 1}. ${this.escapeHtml(item['项目/专业'] || '未知')}</div>
+                            <div class="major-detail">📋 计划: ${this.escapeHtml(item['招生计划'] || '0')}</div>
+                            <div class="major-detail">📌 要求: ${this.escapeHtml(item['录取要求'] || '无')}</div>
+                            ${item['备注'] ? `<div class="major-detail">📝 备注: ${this.escapeHtml(item['备注'])}</div>` : ''}
+                        </div>
+                    `;
+                });
+                
+                basicInfo += `
                             </div>
                         </div>
-
+                        
                         <button class="back-btn" onclick="app.switchTab('list')">
-                            <span>←</span>
-                            返回列表
+                            <span>←</span> 返回列表
                         </button>
                     </div>
                 `;
-
-                document.getElementById('detailContent').innerHTML = detailHtml;
+                
+                document.getElementById('detailContent').innerHTML = basicInfo;
             }
 
             renderStats() {
                 const batchStats = {};
                 const regionStats = {};
-                const typeStats = {};
                 
                 this.data.forEach(item => {
                     const batch = item.批次 || '未知';
-                    const region = item.所在区域 || '未知';
-                    const type = item.学校类型 ? item.学校类型.split(' ')[0] : '未知';
+                    const region = item['所在区域'] || '未知';
                     
                     batchStats[batch] = (batchStats[batch] || 0) + 1;
                     regionStats[region] = (regionStats[region] || 0) + 1;
-                    typeStats[type] = (typeStats[type] || 0) + 1;
                 });
 
-                let statsHtml = '';
+                let statsHtml = '<div class="detail-card">';
                 
                 statsHtml += '<div class="detail-section"><h3>📦 按批次统计</h3>';
                 Object.entries(batchStats).sort((a,b) => b[1] - a[1]).forEach(([batch, count]) => {
                     statsHtml += `
                         <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed #eee;">
                             <span>${batch}</span>
-                            <span style="color:#3498db; font-weight:500;">${count} 条</span>
+                            <span style="color:#3498db;">${count} 条</span>
                         </div>
                     `;
                 });
@@ -950,18 +893,7 @@
                     statsHtml += `
                         <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed #eee;">
                             <span>${region}</span>
-                            <span style="color:#27ae60; font-weight:500;">${count} 条</span>
-                        </div>
-                    `;
-                });
-                statsHtml += '</div>';
-                
-                statsHtml += '<div class="detail-section"><h3>🏫 按学校类型统计</h3>';
-                Object.entries(typeStats).sort((a,b) => b[1] - a[1]).slice(0, 10).forEach(([type, count]) => {
-                    statsHtml += `
-                        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed #eee;">
-                            <span>${type}</span>
-                            <span style="color:#e67e22; font-weight:500;">${count} 条</span>
+                            <span style="color:#27ae60;">${count} 条</span>
                         </div>
                     `;
                 });
@@ -972,32 +904,28 @@
                         <h3>📊 总计</h3>
                         <div style="text-align:center; padding:20px; background:#f8fafc; border-radius:10px;">
                             <span style="font-size:2rem; color:#3498db;">${this.data.length}</span>
-                            <span style="color:#666; display:block;">总记录数</span>
+                            <span style="color:#666;">总记录数</span>
                         </div>
                     </div>
                 `;
                 
+                statsHtml += '</div>';
                 document.getElementById('statsContent').innerHTML = statsHtml;
             }
 
             switchTab(tab) {
                 this.currentTab = tab;
                 
-                // 更新导航按钮状态
                 document.querySelectorAll('.nav-btn').forEach(btn => {
                     btn.classList.remove('active');
-                    if (btn.dataset.tab === tab) {
-                        btn.classList.add('active');
-                    }
+                    if (btn.dataset.tab === tab) btn.classList.add('active');
                 });
                 
-                // 切换标签页显示
                 document.querySelectorAll('.tab-content').forEach(content => {
                     content.classList.remove('active');
                 });
                 document.getElementById(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.add('active');
                 
-                // 根据标签页渲染内容
                 if (tab === 'list') {
                     this.renderList();
                 } else if (tab === 'detail') {
@@ -1024,15 +952,15 @@
 
                 const exportData = this.filteredData.map(item => ({
                     '批次': item.批次,
-                    '学校': item.学校,
-                    '类型': item.学校类型,
-                    '区域': item.所在区域,
-                    '专业': item.专业,
-                    '计划': item.招生计划,
-                    '要求': item.录取要求,
-                    '住宿': item.住宿情况,
-                    '电话': item.联系电话,
-                    '备注': item.备注
+                    '学校名称': item['学校名称'],
+                    '学校类型': item['学校类型'],
+                    '所在区域': item['所在区域'],
+                    '项目/专业': item['项目/专业'],
+                    '招生计划': item['招生计划'],
+                    '录取要求': item['录取要求'],
+                    '住宿情况': item['住宿情况'],
+                    '联系电话': item['联系电话'],
+                    '备注': item['备注']
                 }));
 
                 const ws = XLSX.utils.json_to_sheet(exportData);
@@ -1055,15 +983,19 @@
 
             escapeHtml(text) {
                 if (!text) return '';
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
+                return String(text).replace(/[&<>"]/g, function(match) {
+                    if (match === '&') return '&amp;';
+                    if (match === '<') return '&lt;';
+                    if (match === '>') return '&gt;';
+                    if (match === '"') return '&quot;';
+                    return match;
+                });
             }
         }
 
-        // ========== 启动应用 ==========
+        // 启动应用
         const app = new SchoolQueryApp();
-        window.app = app; // 使app全局可用，方便onclick调用
+        window.app = app;
     </script>
 </body>
 </html>
