@@ -538,10 +538,18 @@
                         }
                         const data = await response.json();
                         
-                        // 添加批次信息
+                        // 添加批次信息，并标准化字段名
                         const batchData = data.map(item => ({
-                            ...item,
-                            批次: file.batch
+                            批次: file.batch,
+                            学校: item['学校名称'] || item['学校'] || '未知',
+                            类型: item['学校类型'] || item['类型'] || '未知',
+                            区域: item['所在区域'] || item['区域'] || '未知',
+                            专业: item['项目/专业'] || item['专业名称'] || item['专业'] || '未知',
+                            计划: item['招生计划'] || item['招生总数'] || item['计划'] || '0',
+                            要求: item['录取要求'] || item['备注'] || '无',
+                            住宿: item['住宿情况'] || item['住宿'] || '未知',
+                            电话: item['联系电话'] || item['电话'] || '无',
+                            备注: item['备注'] || ''
                         }));
                         
                         this.allData = this.allData.concat(batchData);
@@ -589,7 +597,7 @@
             }
 
             initFilters() {
-                const batches = [...new Set(this.data.map(item => item.批次))];
+                const batches = [...new Set(this.data.map(item => item.批次).filter(Boolean))];
                 const regions = [...new Set(this.data.map(item => item.区域).filter(Boolean))];
 
                 const batchSelect = document.getElementById('batchFilter');
@@ -621,6 +629,8 @@
                 });
 
                 document.getElementById('searchBtn').addEventListener('click', () => {
+                    this.searchKeyword = document.getElementById('searchInput').value;
+                    this.currentPage = 1;
                     this.applyFilters();
                 });
 
@@ -698,7 +708,10 @@
                                 if (!item.学校?.toLowerCase().includes(keyword)) return false;
                                 break;
                             case 'major':
-                                if (!item.专业?.toLowerCase().includes(keyword)) return false;
+                                // 搜索专业名称和备注
+                                const majorMatch = item.专业?.toLowerCase().includes(keyword);
+                                const remarkMatch = item.备注?.toLowerCase().includes(keyword);
+                                if (!majorMatch && !remarkMatch) return false;
                                 break;
                             case 'region':
                                 if (!item.区域?.toLowerCase().includes(keyword)) return false;
@@ -737,6 +750,12 @@
                 let html = '<div class="result-list">';
                 
                 displayData.forEach(item => {
+                    // 提取简化的专业名称（去除括号内容）
+                    let simpleMajor = item.专业 || '未知';
+                    if (simpleMajor.includes('(')) {
+                        simpleMajor = simpleMajor.split('(')[0].trim();
+                    }
+                    
                     html += `
                         <div class="result-card" onclick="app.showDetail('${item.学校?.replace(/'/g, "\\'") || ''}')">
                             <div class="card-header">
@@ -745,10 +764,10 @@
                             </div>
                             <div class="card-info">
                                 <span>📍 ${this.escapeHtml(item.区域 || '未知')}</span>
-                                <span>🏫 ${this.escapeHtml((item.类型 || '').split(' ')[0])}</span>
+                                <span>🏫 ${this.escapeHtml((item.类型 || '').split(' ')[0] || '未知')}</span>
                             </div>
                             <div class="card-desc">
-                                <span class="major">📖 ${this.escapeHtml(item.专业 || '未知')}</span>
+                                <span class="major">📖 ${this.escapeHtml(simpleMajor)}</span>
                                 <span class="plan">👥 ${this.escapeHtml(item.计划 || '0')}</span>
                             </div>
                         </div>
@@ -756,7 +775,7 @@
                 });
 
                 if (this.filteredData.length > end) {
-                    html += `<div class="load-more">下拉加载更多...</div>`;
+                    html += `<div class="load-more">下拉加载更多... (${end}/${this.filteredData.length})</div>`;
                 } else if (this.filteredData.length > this.pageSize) {
                     html += `<div class="load-more">已显示全部 ${this.filteredData.length} 条</div>`;
                 }
@@ -786,8 +805,9 @@
                             <div class="major-name">${index + 1}. ${this.escapeHtml(item.专业 || '未知')}</div>
                             <div class="major-detail">计划: ${this.escapeHtml(item.计划 || '0')} 人</div>
                             <div class="major-detail">要求: ${this.escapeHtml(item.要求 || '无')}</div>
-                            ${item.住宿 ? `<div class="major-detail">住宿: ${this.escapeHtml(item.住宿)}</div>` : ''}
-                            ${item.电话 ? `<div class="major-detail">电话: ${this.escapeHtml(item.电话)}</div>` : ''}
+                            ${item.住宿 && item.住宿 !== '未知' ? `<div class="major-detail">住宿: ${this.escapeHtml(item.住宿)}</div>` : ''}
+                            ${item.电话 && item.电话 !== '无' ? `<div class="major-detail">电话: ${this.escapeHtml(item.电话)}</div>` : ''}
+                            ${item.备注 ? `<div class="major-detail">备注: ${this.escapeHtml(item.备注)}</div>` : ''}
                         </div>
                     `;
                 });
