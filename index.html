@@ -3,345 +3,1315 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>广州学校招生查询系统</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>广州学校招生查询 - 极速版</title>
     <style>
-        /* 免责声明样式 */
-        .disclaimer-bar {
+        /* ========== 全局样式 ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: #f5f7fa;
+        }
+
+        .app {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
+
+        /* ========== 头部 ========== */
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .header-stats {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        /* ========== 免责声明 ========== */
+        .disclaimer {
             background: #fff3cd;
             border-left: 4px solid #ffc107;
             padding: 10px 12px;
             margin: 8px 12px;
-            border-radius: 4px;
-            font-size: 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
             color: #856404;
             display: flex;
             align-items: center;
             gap: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-        
+
         .disclaimer-icon {
-            font-size: 16px;
+            font-size: 1.1rem;
         }
-        
-        .disclaimer-text {
+
+        /* ========== 搜索区域 ========== */
+        .search-section {
+            padding: 12px;
+            background: white;
+            border-bottom: 1px solid #eef2f6;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .search-input {
             flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #e0e7ed;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            background: #f8fafc;
+            transition: all 0.2s;
         }
-        
-        .disclaimer-link {
-            color: #856404;
-            text-decoration: underline;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        
-        /* 免责声明弹窗 */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal-overlay.active {
-            display: flex;
-        }
-        
-        .modal-content {
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3498db;
             background: white;
-            border-radius: 12px;
-            max-width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            margin: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
         }
-        
-        .modal-header {
-            padding: 16px;
-            border-bottom: 1px solid #dee2e6;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            background: white;
-        }
-        
-        .modal-header h3 {
-            font-size: 18px;
-            color: #2c3e50;
-            margin: 0;
-        }
-        
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #666;
-            padding: 0 8px;
-        }
-        
-        .modal-body {
-            padding: 20px;
-            font-size: 14px;
-            line-height: 1.6;
-            color: #333;
-        }
-        
-        .modal-body h4 {
-            color: #2c3e50;
-            margin: 20px 0 10px;
-            font-size: 16px;
-        }
-        
-        .modal-body h4:first-child {
-            margin-top: 0;
-        }
-        
-        .modal-body p {
-            margin: 10px 0;
-        }
-        
-        .modal-body ul {
-            margin: 10px 0 10px 20px;
-        }
-        
-        .modal-footer {
-            padding: 16px;
-            border-top: 1px solid #dee2e6;
-            text-align: right;
-            background: #f8f9fa;
-        }
-        
-        .modal-footer button {
+
+        .search-btn {
+            width: 48px;
             background: #3498db;
             color: white;
             border: none;
-            padding: 8px 20px;
-            border-radius: 6px;
-            font-size: 14px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-btn:active {
+            background: #2980b9;
+        }
+
+        .search-type {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .type-btn {
+            flex: 1;
+            min-width: 60px;
+            padding: 8px 0;
+            background: #f0f4f9;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #4a5568;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .type-btn.active {
+            background: #3498db;
+            color: white;
+            font-weight: 500;
+        }
+
+        /* ========== 筛选栏 ========== */
+        .filter-bar {
+            padding: 8px 12px;
+            background: white;
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid #eef2f6;
+        }
+
+        .filter-select {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #e0e7ed;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%234a5568' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 10px center;
+            appearance: none;
+        }
+
+        .reset-btn {
+            padding: 10px 16px;
+            background: #f0f4f9;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #4a5568;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .reset-btn:active {
+            background: #e2e8f0;
+        }
+
+        /* ========== 工具栏 ========== */
+        .toolbar {
+            padding: 8px 12px;
+            background: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #4a5568;
+            border-bottom: 1px solid #eef2f6;
+        }
+
+        .result-count {
+            font-weight: 500;
+        }
+
+        .export-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .export-btn:active {
+            background: #229954;
+        }
+
+        /* ========== 结果列表 ========== */
+        .result-list {
+            padding: 12px;
+            min-height: 60vh;
+        }
+
+        /* 骨架屏加载动画 */
+        .skeleton-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            border: 1px solid #f0f0f0;
+        }
+
+        .skeleton-line {
+            height: 16px;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .skeleton-line.short {
+            width: 60%;
+        }
+
+        .skeleton-line.medium {
+            width: 80%;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* 结果卡片 */
+        .result-card {
+            background: white;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid #f0f4f9;
+            transition: transform 0.1s;
             cursor: pointer;
         }
-        
-        /* 页脚免责声明 */
-        .footer-disclaimer {
+
+        .result-card:active {
+            transform: scale(0.98);
+            background: #f8fafc;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .school-name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #2c3e50;
+            line-height: 1.4;
+        }
+
+        .batch-badge {
+            background: #3498db;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 16px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            margin-left: 8px;
+        }
+
+        .card-info {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+            color: #718096;
+        }
+
+        .card-info span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-desc {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        .major {
+            color: #3498db;
+            max-width: 65%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .plan {
+            font-weight: 600;
+            color: #27ae60;
+        }
+
+        /* ========== 空状态 ========== */
+        .empty-state {
             text-align: center;
-            padding: 12px;
-            font-size: 11px;
-            color: #999;
-            border-top: 1px solid #eee;
-            margin-top: 20px;
-            background: #f9f9f9;
+            padding: 60px 20px;
+            color: #a0aec0;
         }
-        
-        .footer-disclaimer a {
-            color: #666;
-            text-decoration: none;
+
+        .empty-state .emoji {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
         }
-        
-        .footer-disclaimer a:hover {
-            text-decoration: underline;
+
+        /* ========== 详情页 ========== */
+        .detail-card {
+            background: white;
+            border-radius: 16px;
+            margin: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .detail-header {
+            border-bottom: 1px solid #eef2f6;
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+        }
+
+        .detail-header h2 {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .detail-batch {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .detail-section {
+            margin-bottom: 24px;
+        }
+
+        .detail-section h3 {
+            font-size: 1rem;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 10px;
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+        }
+
+        .info-label {
+            color: #718096;
+        }
+
+        .info-value {
+            color: #2d3748;
+            font-weight: 500;
+        }
+
+        .major-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .major-item {
+            background: #f8fafc;
+            padding: 14px;
+            border-radius: 10px;
+            border-left: 3px solid #3498db;
+        }
+
+        .major-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+
+        .major-detail {
+            font-size: 0.85rem;
+            color: #4a5568;
+        }
+
+        .back-btn {
+            background: #f0f4f9;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            color: #4a5568;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        .back-btn:active {
+            background: #e2e8f0;
+        }
+
+        /* ========== 底部导航 ========== */
+        .bottom-nav {
+            display: flex;
+            background: white;
+            border-top: 1px solid #eef2f6;
+            padding: 8px 0;
+            position: sticky;
+            bottom: 0;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 8px;
+            font-size: 0.75rem;
+            color: #a0aec0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .nav-btn.active {
+            color: #3498db;
+        }
+
+        .nav-btn .emoji {
+            font-size: 1.2rem;
+        }
+
+        /* ========== 提示消息 ========== */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            z-index: 1000;
+            animation: slideUp 0.3s;
+            white-space: nowrap;
+            max-width: 90%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        @keyframes slideUp {
+            from { bottom: 0; opacity: 0; }
+            to { bottom: 80px; opacity: 1; }
+        }
+
+        /* ========== 加载更多 ========== */
+        .load-more {
+            text-align: center;
+            padding: 16px;
+            color: #a0aec0;
+            font-size: 0.85rem;
+        }
+
+        .infinite-scroll-trigger {
+            height: 20px;
+            margin: 10px 0;
+        }
+
+        /* ========== 暗色模式支持 ========== */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #1a202c;
+            }
+            
+            .app {
+                background: #2d3748;
+            }
+            
+            .result-card,
+            .detail-card,
+            .filter-bar,
+            .search-section,
+            .toolbar {
+                background: #2d3748;
+                border-color: #4a5568;
+            }
+            
+            .school-name {
+                color: #e2e8f0;
+            }
+            
+            .card-info,
+            .info-label {
+                color: #a0aec0;
+            }
+            
+            .search-input,
+            .filter-select {
+                background: #4a5568;
+                border-color: #718096;
+                color: #e2e8f0;
+            }
+            
+            .search-input::placeholder {
+                color: #a0aec0;
+            }
+            
+            .type-btn,
+            .reset-btn,
+            .back-btn {
+                background: #4a5568;
+                color: #e2e8f0;
+            }
+            
+            .info-grid,
+            .major-item {
+                background: #4a5568;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
+    <div class="app">
         <!-- 头部 -->
-        <header class="app-header">
-            <h1>📚 广州学校招生查询</h1>
-            <div class="header-stats">
-                <span id="data-count">加载中...</span>
-            </div>
-        </header>
+        <div class="header">
+            <h1>
+                <span>📚</span>
+                广州学校招生
+            </h1>
+            <div class="header-stats" id="headerStats">加载中...</div>
+        </div>
 
-        <!-- 免责声明栏 -->
-        <div class="disclaimer-bar">
+        <!-- 免责声明 -->
+        <div class="disclaimer">
             <span class="disclaimer-icon">⚠️</span>
-            <span class="disclaimer-text">本系统仅供查询参考，所有数据以官方发布为准</span>
-            <span class="disclaimer-link" onclick="showDisclaimerModal()">查看详情</span>
+            <span>数据仅供参考，请以官方发布为准</span>
         </div>
 
-        <!-- 搜索栏 -->
+        <!-- 搜索区域 -->
         <div class="search-section">
-            <div class="search-type">
-                <select id="search-type" class="search-select">
-                    <option value="school">🏫 学校名称</option>
-                    <option value="major">📖 专业/项目</option>
-                    <option value="region">📍 区域</option>
-                    <option value="type">🏷️ 学校类型</option>
-                    <option value="batch">📦 批次</option>
-                </select>
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="输入学校或专业..." autocomplete="off">
+                <button class="search-btn" id="searchBtn">🔍</button>
             </div>
-            <div class="search-input-group">
-                <input type="text" id="search-input" placeholder="请输入关键词..." class="search-input">
-                <button id="search-btn" class="search-btn">🔍</button>
+            <div class="search-type" id="searchType">
+                <button class="type-btn active" data-type="school">学校</button>
+                <button class="type-btn" data-type="major">专业</button>
+                <button class="type-btn" data-type="region">区域</button>
+                <button class="type-btn" data-type="batch">批次</button>
             </div>
         </div>
 
-        <!-- 快捷筛选 -->
-        <div class="filter-section">
-            <div class="filter-row">
-                <select id="batch-filter" class="filter-select">
-                    <option value="all">📦 全部批次</option>
-                </select>
-                <select id="region-filter" class="filter-select">
-                    <option value="all">📍 全部区域</option>
-                </select>
-            </div>
-            <div class="filter-row">
-                <select id="type-filter" class="filter-select">
-                    <option value="all">🏷️ 全部类型</option>
-                </select>
-                <button id="reset-btn" class="reset-btn">🔄 重置</button>
-            </div>
+        <!-- 筛选栏 -->
+        <div class="filter-bar">
+            <select class="filter-select" id="batchFilter">
+                <option value="all">📦 全部批次</option>
+            </select>
+            <select class="filter-select" id="regionFilter">
+                <option value="all">📍 全部区域</option>
+            </select>
+            <button class="reset-btn" id="resetBtn">重置</button>
         </div>
 
-        <!-- 导出按钮 -->
-        <div class="export-section">
-            <button id="export-current" class="export-btn current">📥 导出当前结果</button>
-            <button id="export-all" class="export-btn all">📥 导出全部数据</button>
+        <!-- 工具栏 -->
+        <div class="toolbar">
+            <span class="result-count" id="resultCount">0 条记录</span>
+            <button class="export-btn" id="exportBtn">
+                <span>📥</span>
+                导出
+            </button>
         </div>
 
-        <!-- 统计信息 -->
-        <div class="stats-bar">
-            <span id="result-count">0 条记录</span>
-            <span id="export-status" class="export-status"></span>
-        </div>
-
-        <!-- 标签页 -->
-        <div class="tab-container">
-            <div class="tab-header">
-                <button class="tab-btn active" data-tab="result">📋 搜索结果</button>
-                <button class="tab-btn" data-tab="detail">📄 学校详情</button>
-                <button class="tab-btn" data-tab="stats">📊 统计信息</button>
-            </div>
-
-            <!-- 搜索结果标签页 -->
-            <div id="tab-result" class="tab-content active">
-                <div class="result-list" id="result-list">
-                    <!-- 搜索结果将动态加载到这里 -->
-                    <div class="loading">加载数据中...</div>
-                </div>
-            </div>
-
-            <!-- 详情标签页 -->
-            <div id="tab-detail" class="tab-content">
-                <div class="detail-card" id="detail-card">
-                    <div class="detail-placeholder">
-                        👆 点击搜索结果中的学校查看详细信息
-                    </div>
-                </div>
-            </div>
-
-            <!-- 统计标签页 -->
-            <div id="tab-stats" class="tab-content">
-                <div class="stats-container" id="stats-container">
-                    <div class="loading">加载统计信息中...</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 底部免责声明 -->
-        <div class="footer-disclaimer">
-            <a href="#" onclick="showDisclaimerModal(); return false;">免责声明</a> | 
-            数据来源：2025年广州市招生计划 | 
-            <span id="current-year"></span>
-        </div>
+        <!-- 内容区域 -->
+        <div id="contentArea"></div>
 
         <!-- 底部导航 -->
-        <nav class="bottom-nav">
-            <button class="nav-btn active" data-tab="result">📋 列表</button>
-            <button class="nav-btn" data-tab="detail">📄 详情</button>
-            <button class="nav-btn" data-tab="stats">📊 统计</button>
-        </nav>
-    </div>
-
-    <!-- 免责声明弹窗 -->
-    <div id="disclaimerModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>⚠️ 免责声明</h3>
-                <button class="modal-close" onclick="hideDisclaimerModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <h4>1. 数据来源说明</h4>
-                <p>本系统所展示的招生信息来源于广州市教育局官方发布的《2025年广州市高中阶段学校招生报考指南》。所有数据仅供参考，不构成任何形式的承诺或保证。</p>
-                
-                <h4>2. 数据准确性</h4>
-                <p>尽管我们尽力确保数据的准确性和完整性，但招生计划可能会有调整和变更。建议用户以广州市教育局官方发布的最新信息为准，并在填报志愿前咨询相关学校或教育部门。</p>
-                
-                <h4>3. 查询结果说明</h4>
-                <p>本系统的查询结果基于预设的算法和关键词匹配，可能存在以下情况：</p>
-                <ul>
-                    <li>数据更新延迟或不完整</li>
-                    <li>查询结果与实际情况存在差异</li>
-                    <li>部分信息可能存在录入错误</li>
-                </ul>
-                
-                <h4>4. 使用建议</h4>
-                <p>建议用户：</p>
-                <ul>
-                    <li>通过多个渠道核实招生信息</li>
-                    <li>直接联系目标学校确认招生细节</li>
-                    <li>关注广州市教育局官方公告</li>
-                    <li>在填报志愿前仔细阅读官方报考指南</li>
-                </ul>
-                
-                <h4>5. 责任限制</h4>
-                <p>本系统开发者及维护者不对因使用本系统信息而导致的任何直接或间接损失承担责任。用户自行承担使用本系统的全部风险。</p>
-                
-                <h4>6. 知识产权</h4>
-                <p>本系统的源代码和界面设计受版权保护。数据内容的版权归原数据发布机构所有。</p>
-                
-                <h4>7. 免责声明更新</h4>
-                <p>我们保留随时修改本免责声明的权利。继续使用本系统即表示您接受更新后的免责声明。</p>
-                
-                <p style="margin-top: 20px; font-style: italic; color: #666;">最后更新：2025年3月</p>
-            </div>
-            <div class="modal-footer">
-                <button onclick="hideDisclaimerModal()">我已了解</button>
-            </div>
+        <div class="bottom-nav">
+            <button class="nav-btn active" data-tab="list">
+                <span class="emoji">📋</span>
+                <span>列表</span>
+            </button>
+            <button class="nav-btn" data-tab="detail">
+                <span class="emoji">📄</span>
+                <span>详情</span>
+            </button>
+            <button class="nav-btn" data-tab="stats">
+                <span class="emoji">📊</span>
+                <span>统计</span>
+            </button>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="js/data-parser.js"></script>
-    <script src="js/app.js"></script>
     <script>
-        // 免责声明弹窗控制
-        function showDisclaimerModal() {
-            document.getElementById('disclaimerModal').classList.add('active');
-        }
-        
-        function hideDisclaimerModal() {
-            document.getElementById('disclaimerModal').classList.remove('active');
-        }
-        
-        // 点击模态框外部关闭
-        document.getElementById('disclaimerModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                hideDisclaimerModal();
+        // ========== 配置 ==========
+        const CONFIG = {
+            PAGE_SIZE: 20,              // 每页加载20条
+            PRELOAD_PAGES: 2,           // 预加载2页
+            CACHE_KEY: 'schoolData',     // 缓存key
+            CACHE_EXPIRE: 24 * 60 * 60 * 1000, // 缓存24小时
+            DEBOUNCE_DELAY: 300          // 防抖延迟
+        };
+
+        // ========== 数据管理器 ==========
+        class DataManager {
+            constructor() {
+                this.rawData = [];
+                this.filteredData = [];
+                this.currentPage = 1;
+                this.isLoading = false;
+                this.hasMore = true;
+                this.searchType = 'school';
+                this.searchKeyword = '';
+                this.batchFilter = 'all';
+                this.regionFilter = 'all';
+                this.observers = [];
             }
-        });
-        
-        // 显示当前年份
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-        
-        // 首次访问自动显示免责声明（可选）
-        // 可以根据需要取消注释
-        /*
-        if (!localStorage.getItem('disclaimerAccepted')) {
-            setTimeout(showDisclaimerModal, 1000);
+
+            // 初始化数据
+            async init() {
+                this.showLoading();
+                
+                // 尝试从缓存加载
+                const cached = this.loadFromCache();
+                if (cached) {
+                    this.rawData = cached;
+                    this.filteredData = [...cached];
+                    this.renderInitial();
+                    this.hideLoading();
+                } else {
+                    // 首次加载少量数据
+                    await this.loadSampleData();
+                }
+                
+                // 后台加载完整数据
+                this.loadFullDataInBackground();
+            }
+
+            // 加载示例数据（快速显示）
+            loadSampleData() {
+                this.rawData = SAMPLE_DATA;
+                this.filteredData = [...SAMPLE_DATA];
+                this.renderInitial();
+                this.hideLoading();
+            }
+
+            // 后台加载完整数据
+            async loadFullDataInBackground() {
+                try {
+                    // 这里可以加载完整的JSON数据
+                    // 为了示例，我们使用扩展数据
+                    setTimeout(() => {
+                        this.rawData = [...SAMPLE_DATA, ...EXTENDED_DATA];
+                        this.filteredData = this.filterData();
+                        this.saveToCache(this.rawData);
+                        this.notifyObservers();
+                    }, 2000);
+                } catch (e) {
+                    console.warn('加载完整数据失败', e);
+                }
+            }
+
+            // 保存到缓存
+            saveToCache(data) {
+                try {
+                    const cacheData = {
+                        timestamp: Date.now(),
+                        data: data
+                    };
+                    localStorage.setItem(CONFIG.CACHE_KEY, JSON.stringify(cacheData));
+                } catch (e) {
+                    console.warn('缓存失败', e);
+                }
+            }
+
+            // 从缓存加载
+            loadFromCache() {
+                try {
+                    const cached = localStorage.getItem(CONFIG.CACHE_KEY);
+                    if (!cached) return null;
+                    
+                    const { timestamp, data } = JSON.parse(cached);
+                    if (Date.now() - timestamp > CONFIG.CACHE_EXPIRE) {
+                        localStorage.removeItem(CONFIG.CACHE_KEY);
+                        return null;
+                    }
+                    
+                    return data;
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            // 过滤数据
+            filterData() {
+                return this.rawData.filter(item => {
+                    // 批次筛选
+                    if (this.batchFilter !== 'all' && item.批次 !== this.batchFilter) return false;
+                    
+                    // 区域筛选
+                    if (this.regionFilter !== 'all' && item.区域 !== this.regionFilter) return false;
+                    
+                    // 搜索关键词
+                    if (this.searchKeyword) {
+                        const keyword = this.searchKeyword.toLowerCase();
+                        switch(this.searchType) {
+                            case 'school':
+                                if (!item.学校.toLowerCase().includes(keyword)) return false;
+                                break;
+                            case 'major':
+                                if (!item.专业.toLowerCase().includes(keyword)) return false;
+                                break;
+                            case 'region':
+                                if (!item.区域.toLowerCase().includes(keyword)) return false;
+                                break;
+                            case 'batch':
+                                if (!item.批次.toLowerCase().includes(keyword)) return false;
+                                break;
+                        }
+                    }
+                    
+                    return true;
+                });
+            }
+
+            // 获取当前页数据
+            getCurrentPageData() {
+                const start = 0;
+                const end = this.currentPage * CONFIG.PAGE_SIZE;
+                return this.filteredData.slice(start, end);
+            }
+
+            // 加载更多
+            loadMore() {
+                if (this.isLoading || !this.hasMore) return;
+                
+                this.isLoading = true;
+                this.currentPage++;
+                
+                if (this.currentPage * CONFIG.PAGE_SIZE >= this.filteredData.length) {
+                    this.hasMore = false;
+                }
+                
+                this.isLoading = false;
+                this.notifyObservers();
+            }
+
+            // 重置分页
+            resetPagination() {
+                this.currentPage = 1;
+                this.hasMore = true;
+            }
+
+            // 更新过滤条件
+            updateFilters(type, value) {
+                switch(type) {
+                    case 'searchType':
+                        this.searchType = value;
+                        break;
+                    case 'searchKeyword':
+                        this.searchKeyword = value;
+                        break;
+                    case 'batch':
+                        this.batchFilter = value;
+                        break;
+                    case 'region':
+                        this.regionFilter = value;
+                        break;
+                }
+                
+                this.filteredData = this.filterData();
+                this.resetPagination();
+                this.notifyObservers();
+            }
+
+            // 重置所有
+            reset() {
+                this.searchType = 'school';
+                this.searchKeyword = '';
+                this.batchFilter = 'all';
+                this.regionFilter = 'all';
+                this.filteredData = [...this.rawData];
+                this.resetPagination();
+                this.notifyObservers();
+            }
+
+            // 观察者模式
+            subscribe(observer) {
+                this.observers.push(observer);
+            }
+
+            notifyObservers() {
+                this.observers.forEach(observer => observer(this));
+            }
+
+            showLoading() {
+                document.getElementById('contentArea').innerHTML = this.renderSkeleton();
+            }
+
+            hideLoading() {
+                // 由观察者处理
+            }
+
+            renderSkeleton() {
+                let html = '<div class="result-list">';
+                for (let i = 0; i < 6; i++) {
+                    html += `
+                        <div class="skeleton-card">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                            <div class="skeleton-line"></div>
+                        </div>
+                    `;
+                }
+                html += '</div>';
+                return html;
+            }
+
+            renderInitial() {
+                this.notifyObservers();
+            }
         }
-        */
+
+        // ========== 示例数据 ==========
+        const SAMPLE_DATA = [
+            {
+                "批次": "第一批次(港澳子弟班)",
+                "学校": "广东华侨中学（港澳子弟班）",
+                "类型": "公办 国家级示范性",
+                "区域": "白云区",
+                "专业": "港澳子弟班",
+                "计划": "250",
+                "要求": "普通高中录取最低控制线",
+                "住宿": "总宿位710个",
+                "电话": "020-81798120"
+            },
+            {
+                "批次": "第一批次(港澳子弟班)",
+                "学校": "广州市培英中学（鹤洞校区）（港澳子弟班）",
+                "类型": "公办 国家级示范性",
+                "区域": "荔湾区",
+                "专业": "港澳子弟班",
+                "计划": "200",
+                "要求": "普通高中录取最低控制线",
+                "住宿": "总宿位550个",
+                "电话": "020-81679523"
+            },
+            {
+                "批次": "第一批次(自主招生)",
+                "学校": "华南师范大学附属中学（石牌校区）",
+                "类型": "公办 国家级示范性",
+                "区域": "天河区",
+                "专业": "自主招生",
+                "计划": "35",
+                "要求": "第一梯度控制线 等级:4B",
+                "住宿": "总宿位346个",
+                "电话": "020-38630710"
+            },
+            {
+                "批次": "第一批次(自主招生)",
+                "学校": "广东实验中学（荔湾校区）",
+                "类型": "公办 国家级示范性",
+                "区域": "荔湾区",
+                "专业": "自主招生",
+                "计划": "67",
+                "要求": "第一梯度控制线 等级:4C",
+                "住宿": "总宿位670个",
+                "电话": "020-81505108"
+            },
+            {
+                "批次": "第一批次(特长生)",
+                "学校": "华南师范大学附属中学（石牌校区）",
+                "类型": "公办 国家级示范性",
+                "区域": "天河区",
+                "专业": "合唱",
+                "计划": "12",
+                "要求": "第二梯度控制线",
+                "住宿": "总宿位346个",
+                "电话": "020-38630710"
+            },
+            {
+                "批次": "第一批次(外语艺术)",
+                "学校": "广州市艺术中学（越秀校区）",
+                "类型": "公办 其他普通高中",
+                "区域": "越秀区",
+                "专业": "美术",
+                "计划": "300",
+                "要求": "录取最低控制线",
+                "住宿": "无住宿",
+                "电话": "020-83838509"
+            },
+            {
+                "批次": "第一批次(中本贯通)",
+                "学校": "广州市交通运输职业学校",
+                "类型": "中职 国家级重点",
+                "区域": "增城区",
+                "专业": "新能源汽车运用与维修 (3+4)",
+                "计划": "20",
+                "要求": "对口:广州航海学院",
+                "住宿": "1000元/年",
+                "电话": "020-86092539"
+            },
+            {
+                "批次": "第三批次",
+                "学校": "华南师范大学附属中学（石牌校区）",
+                "类型": "公办 国家级示范性",
+                "区域": "天河区",
+                "专业": "普通高中",
+                "计划": "94",
+                "要求": "统一划定",
+                "住宿": "总宿位346个",
+                "电话": "020-38630710"
+            },
+            {
+                "批次": "第四批次",
+                "学校": "广州市西关培英中学",
+                "类型": "公办 其他普通高中",
+                "区域": "荔湾区",
+                "专业": "普通高中",
+                "计划": "198",
+                "要求": "统一划定",
+                "住宿": "总宿位70个",
+                "电话": "020-81703023"
+            }
+        ];
+
+        const EXTENDED_DATA = [
+            // 可以在这里添加更多数据
+        ];
+
+        // ========== UI 渲染器 ==========
+        class UIRenderer {
+            constructor(dataManager) {
+                this.dataManager = dataManager;
+                this.currentDetailSchool = null;
+                this.initEventListeners();
+                this.initFilters();
+            }
+
+            // 初始化事件监听
+            initEventListeners() {
+                // 搜索输入防抖
+                let debounceTimer;
+                document.getElementById('searchInput').addEventListener('input', (e) => {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(() => {
+                        this.dataManager.updateFilters('searchKeyword', e.target.value);
+                    }, CONFIG.DEBOUNCE_DELAY);
+                });
+
+                // 搜索按钮
+                document.getElementById('searchBtn').addEventListener('click', () => {
+                    const keyword = document.getElementById('searchInput').value;
+                    this.dataManager.updateFilters('searchKeyword', keyword);
+                });
+
+                // 搜索类型切换
+                document.querySelectorAll('.type-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.dataManager.updateFilters('searchType', e.target.dataset.type);
+                    });
+                });
+
+                // 筛选器
+                document.getElementById('batchFilter').addEventListener('change', (e) => {
+                    this.dataManager.updateFilters('batch', e.target.value);
+                });
+
+                document.getElementById('regionFilter').addEventListener('change', (e) => {
+                    this.dataManager.updateFilters('region', e.target.value);
+                });
+
+                // 重置按钮
+                document.getElementById('resetBtn').addEventListener('click', () => {
+                    document.getElementById('searchInput').value = '';
+                    document.getElementById('batchFilter').value = 'all';
+                    document.getElementById('regionFilter').value = 'all';
+                    document.querySelector('.type-btn[data-type="school"]').click();
+                    this.dataManager.reset();
+                });
+
+                // 导出按钮
+                document.getElementById('exportBtn').addEventListener('click', () => this.exportData());
+
+                // 底部导航
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                        e.target.closest('.nav-btn').classList.add('active');
+                        this.switchTab(e.target.closest('.nav-btn').dataset.tab);
+                    });
+                });
+
+                // 无限滚动
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting && this.dataManager.hasMore) {
+                            this.dataManager.loadMore();
+                        }
+                    });
+                });
+
+                const trigger = document.createElement('div');
+                trigger.className = 'infinite-scroll-trigger';
+                document.getElementById('contentArea').appendChild(trigger);
+                observer.observe(trigger);
+
+                // 订阅数据变化
+                this.dataManager.subscribe((data) => this.render(data));
+            }
+
+            // 初始化筛选器选项
+            initFilters() {
+                const batches = [...new Set(this.dataManager.rawData.map(item => item.批次))];
+                const regions = [...new Set(this.dataManager.rawData.map(item => item.区域))];
+
+                const batchSelect = document.getElementById('batchFilter');
+                batches.forEach(batch => {
+                    const option = document.createElement('option');
+                    option.value = batch;
+                    option.textContent = batch;
+                    batchSelect.appendChild(option);
+                });
+
+                const regionSelect = document.getElementById('regionFilter');
+                regions.forEach(region => {
+                    const option = document.createElement('option');
+                    option.value = region;
+                    option.textContent = region;
+                    regionSelect.appendChild(option);
+                });
+            }
+
+            // 渲染主界面
+            render(dataManager) {
+                const data = dataManager.getCurrentPageData();
+                const total = dataManager.filteredData.length;
+                
+                // 更新统计
+                document.getElementById('resultCount').textContent = `${total} 条记录`;
+                document.getElementById('headerStats').textContent = `共${dataManager.rawData.length}条`;
+
+                // 渲染列表
+                if (data.length === 0) {
+                    this.renderEmpty();
+                } else {
+                    this.renderList(data);
+                }
+            }
+
+            // 渲染列表
+            renderList(data) {
+                let html = '<div class="result-list">';
+                
+                data.forEach(item => {
+                    html += `
+                        <div class="result-card" onclick="renderer.showDetail('${item.学校.replace(/'/g, "\\'")}')">
+                            <div class="card-header">
+                                <span class="school-name">${this.escapeHtml(item.学校)}</span>
+                                <span class="batch-badge">${this.escapeHtml(item.批次.split('(')[0])}</span>
+                            </div>
+                            <div class="card-info">
+                                <span>📍 ${this.escapeHtml(item.区域)}</span>
+                                <span>🏫 ${this.escapeHtml(item.类型.split(' ')[0])}</span>
+                            </div>
+                            <div class="card-desc">
+                                <span class="major">📖 ${this.escapeHtml(item.专业)}</span>
+                                <span class="plan">👥 ${this.escapeHtml(item.计划)}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                // 加载更多提示
+                if (this.dataManager.hasMore) {
+                    html += '<div class="load-more">下拉加载更多...</div>';
+                } else if (this.dataManager.filteredData.length > CONFIG.PAGE_SIZE) {
+                    html += '<div class="load-more">已显示全部内容</div>';
+                }
+
+                html += '</div>';
+                document.getElementById('contentArea').innerHTML = html;
+            }
+
+            // 渲染空状态
+            renderEmpty() {
+                document.getElementById('contentArea').innerHTML = `
+                    <div class="empty-state">
+                        <div class="emoji">🔍</div>
+                        <div>没有找到相关记录</div>
+                        <div style="font-size:0.8rem; margin-top:8px;">试试其他关键词</div>
+                    </div>
+                `;
+            }
+
+            // 显示详情
+            showDetail(schoolName) {
+                const items = this.dataManager.rawData.filter(item => item.学校 === schoolName);
+                if (items.length === 0) return;
+
+                this.currentDetailSchool = schoolName;
+                this.switchTab('detail');
+                
+                const first = items[0];
+                let majorList = '';
+                
+                items.forEach((item, index) => {
+                    majorList += `
+                        <div class="major-item">
+                            <div class="major-name">${index + 1}. ${this.escapeHtml(item.专业)}</div>
+                            <div class="major-detail">计划: ${this.escapeHtml(item.计划)} 人</div>
+                            <div class="major-detail">要求: ${this.escapeHtml(item.要求)}</div>
+                            ${item.住宿 ? `<div class="major-detail">住宿: ${this.escapeHtml(item.住宿)}</div>` : ''}
+                        </div>
+                    `;
+                });
+
+                const detailHtml = `
+                    <div class="detail-card">
+                        <div class="detail-header">
+                            <h2>${this.escapeHtml(first.学校)}</h2>
+                            <span class="detail-batch">${this.escapeHtml(first.批次)}</span>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h3>🏫 基本信息</h3>
+                            <div class="info-grid">
+                                <span class="info-label">学校类型</span>
+                                <span class="info-value">${this.escapeHtml(first.类型)}</span>
+                                <span class="info-label">所在区域</span>
+                                <span class="info-value">${this.escapeHtml(first.区域)}</span>
+                                <span class="info-label">联系电话</span>
+                                <span class="info-value">${this.escapeHtml(first.电话 || '暂无')}</span>
+                                <span class="info-label">住宿情况</span>
+                                <span class="info-value">${this.escapeHtml(first.住宿 || '暂无')}</span>
+                            </div>
+                        </div>
+
+                        <div class="detail-section">
+                            <h3>📚 招生项目 (${items.length})</h3>
+                            <div class="major-list">
+                                ${majorList}
+                            </div>
+                        </div>
+
+                        <button class="back-btn" onclick="renderer.switchTab('list')">
+                            <span>←</span>
+                            返回列表
+                        </button>
+                    </div>
+                `;
+
+                document.getElementById('contentArea').innerHTML = detailHtml;
+            }
+
+            // 切换标签页
+            switchTab(tab) {
+                if (tab === 'list') {
+                    this.render(this.dataManager);
+                } else if (tab === 'detail') {
+                    if (this.currentDetailSchool) {
+                        this.showDetail(this.currentDetailSchool);
+                    } else {
+                        document.getElementById('contentArea').innerHTML = `
+                            <div class="empty-state">
+                                <div class="emoji">👆</div>
+                                <div>点击搜索结果查看详情</div>
+                            </div>
+                        `;
+                    }
+                } else if (tab === 'stats') {
+                    this.renderStats();
+                }
+            }
+
+            // 渲染统计
+            renderStats() {
+                const batchStats = {};
+                const regionStats = {};
+                
+                this.dataManager.rawData.forEach(item => {
+                    batchStats[item.批次] = (batchStats[item.批次] || 0) + 1;
+                    regionStats[item.区域] = (regionStats[item.区域] || 0) + 1;
+                });
+
+                let statsHtml = '<div class="detail-card">';
+                
+                statsHtml += '<div class="detail-section"><h3>📦 按批次统计</h3>';
+                Object.entries(batchStats).forEach(([batch, count]) => {
+                    statsHtml += `
+                        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed #eee;">
+                            <span>${batch}</span>
+                            <span style="color:#3498db; font-weight:500;">${count} 条</span>
+                        </div>
+                    `;
+                });
+                statsHtml += '</div>';
+
+                statsHtml += '<div class="detail-section"><h3>📍 按区域统计</h3>';
+                Object.entries(regionStats).sort((a,b) => b[1] - a[1]).forEach(([region, count]) => {
+                    statsHtml += `
+                        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed #eee;">
+                            <span>${region}</span>
+                            <span style="color:#27ae60; font-weight:500;">${count} 条</span>
+                        </div>
+                    `;
+                });
+                statsHtml += '</div>';
+                
+                statsHtml += `
+                    <div class="detail-section">
+                        <h3>📊 总计</h3>
+                        <div style="text-align:center; padding:20px; background:#f8fafc; border-radius:10px;">
+                            <span style="font-size:2rem; color:#3498db;">${this.dataManager.rawData.length}</span>
+                            <span style="color:#666; display:block;">总记录数</span>
+                        </div>
+                    </div>
+                `;
+                
+                statsHtml += '</div>';
+                
+                document.getElementById('contentArea').innerHTML = statsHtml;
+            }
+
+            // 导出数据
+            exportData() {
+                const data = this.dataManager.filteredData;
+                if (data.length === 0) {
+                    this.showToast('没有可导出的数据');
+                    return;
+                }
+
+                const ws = XLSX.utils.json_to_sheet(data);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, '招生计划');
+                
+                const filename = `广州学校招生_${new Date().toISOString().slice(0,10)}.xlsx`;
+                XLSX.writeFile(wb, filename);
+                
+                this.showToast(`已导出 ${data.length} 条记录`);
+            }
+
+            // 显示提示
+            showToast(message) {
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 2000);
+            }
+
+            // 转义HTML
+            escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        }
+
+        // ========== 初始化 ==========
+        const dataManager = new DataManager();
+        const renderer = new UIRenderer(dataManager);
+        dataManager.init();
     </script>
 </body>
 </html>
