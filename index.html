@@ -538,18 +538,30 @@
                         }
                         const data = await response.json();
                         
-                        // 添加批次信息，并标准化字段名
+                        // 标准化字段名 - 适配你的JSON格式
                         const batchData = data.map(item => ({
+                            // 保留原始字段，同时添加标准化字段
                             批次: file.batch,
-                            学校: item['学校名称'] || item['学校'] || '未知',
-                            类型: item['学校类型'] || item['类型'] || '未知',
-                            区域: item['所在区域'] || item['区域'] || '未知',
-                            专业: item['项目/专业'] || item['专业名称'] || item['专业'] || '未知',
-                            计划: item['招生计划'] || item['招生总数'] || item['计划'] || '0',
-                            要求: item['录取要求'] || item['备注'] || '无',
-                            住宿: item['住宿情况'] || item['住宿'] || '未知',
-                            电话: item['联系电话'] || item['电话'] || '无',
-                            备注: item['备注'] || ''
+                            学校: item['学校名称'] || '未知',
+                            学校类型: item['学校类型'] || '未知',
+                            所在区域: item['所在区域'] || '未知',
+                            专业: item['项目/专业'] || '未知',
+                            招生计划: item['招生计划'] || '未知',
+                            录取要求: item['录取要求'] || '无',
+                            住宿情况: item['住宿情况'] || '未知',
+                            联系电话: item['联系电话'] || '无',
+                            备注: item['备注'] || '',
+                            
+                            // 同时保留原字段名，方便其他用途
+                            schoolName: item['学校名称'] || '未知',
+                            schoolType: item['学校类型'] || '未知',
+                            region: item['所在区域'] || '未知',
+                            major: item['项目/专业'] || '未知',
+                            plan: item['招生计划'] || '未知',
+                            requirement: item['录取要求'] || '无',
+                            accommodation: item['住宿情况'] || '未知',
+                            phone: item['联系电话'] || '无',
+                            remark: item['备注'] || ''
                         }));
                         
                         this.allData = this.allData.concat(batchData);
@@ -598,7 +610,7 @@
 
             initFilters() {
                 const batches = [...new Set(this.data.map(item => item.批次).filter(Boolean))];
-                const regions = [...new Set(this.data.map(item => item.区域).filter(Boolean))];
+                const regions = [...new Set(this.data.map(item => item.所在区域).filter(Boolean))];
 
                 const batchSelect = document.getElementById('batchFilter');
                 batches.sort().forEach(batch => {
@@ -699,7 +711,7 @@
             applyFilters() {
                 this.filteredData = this.data.filter(item => {
                     if (this.batchFilter !== 'all' && item.批次 !== this.batchFilter) return false;
-                    if (this.regionFilter !== 'all' && item.区域 !== this.regionFilter) return false;
+                    if (this.regionFilter !== 'all' && item.所在区域 !== this.regionFilter) return false;
                     
                     if (this.searchKeyword) {
                         const keyword = this.searchKeyword.toLowerCase();
@@ -708,13 +720,13 @@
                                 if (!item.学校?.toLowerCase().includes(keyword)) return false;
                                 break;
                             case 'major':
-                                // 搜索专业名称和备注
+                                // 搜索专业和备注
                                 const majorMatch = item.专业?.toLowerCase().includes(keyword);
                                 const remarkMatch = item.备注?.toLowerCase().includes(keyword);
                                 if (!majorMatch && !remarkMatch) return false;
                                 break;
                             case 'region':
-                                if (!item.区域?.toLowerCase().includes(keyword)) return false;
+                                if (!item.所在区域?.toLowerCase().includes(keyword)) return false;
                                 break;
                             case 'batch':
                                 if (!item.批次?.toLowerCase().includes(keyword)) return false;
@@ -750,10 +762,10 @@
                 let html = '<div class="result-list">';
                 
                 displayData.forEach(item => {
-                    // 提取简化的专业名称（去除括号内容）
+                    // 简化专业名称
                     let simpleMajor = item.专业 || '未知';
-                    if (simpleMajor.includes('(')) {
-                        simpleMajor = simpleMajor.split('(')[0].trim();
+                    if (simpleMajor.includes('【')) {
+                        simpleMajor = simpleMajor.split('【')[0].trim();
                     }
                     
                     html += `
@@ -763,12 +775,12 @@
                                 <span class="batch-badge">${this.escapeHtml((item.批次 || '').split('(')[0])}</span>
                             </div>
                             <div class="card-info">
-                                <span>📍 ${this.escapeHtml(item.区域 || '未知')}</span>
-                                <span>🏫 ${this.escapeHtml((item.类型 || '').split(' ')[0] || '未知')}</span>
+                                <span>📍 ${this.escapeHtml(item.所在区域 || '未知')}</span>
+                                <span>🏫 ${this.escapeHtml((item.学校类型 || '').split(' ')[0] || '未知')}</span>
                             </div>
                             <div class="card-desc">
                                 <span class="major">📖 ${this.escapeHtml(simpleMajor)}</span>
-                                <span class="plan">👥 ${this.escapeHtml(item.计划 || '0')}</span>
+                                <span class="plan">👥 ${this.escapeHtml(item.招生计划 || '0')}</span>
                             </div>
                         </div>
                     `;
@@ -803,10 +815,10 @@
                     majorList += `
                         <div class="major-item">
                             <div class="major-name">${index + 1}. ${this.escapeHtml(item.专业 || '未知')}</div>
-                            <div class="major-detail">计划: ${this.escapeHtml(item.计划 || '0')} 人</div>
-                            <div class="major-detail">要求: ${this.escapeHtml(item.要求 || '无')}</div>
-                            ${item.住宿 && item.住宿 !== '未知' ? `<div class="major-detail">住宿: ${this.escapeHtml(item.住宿)}</div>` : ''}
-                            ${item.电话 && item.电话 !== '无' ? `<div class="major-detail">电话: ${this.escapeHtml(item.电话)}</div>` : ''}
+                            <div class="major-detail">计划: ${this.escapeHtml(item.招生计划 || '0')}</div>
+                            <div class="major-detail">要求: ${this.escapeHtml(item.录取要求 || '无')}</div>
+                            ${item.住宿情况 && item.住宿情况 !== '未知' ? `<div class="major-detail">住宿: ${this.escapeHtml(item.住宿情况)}</div>` : ''}
+                            ${item.联系电话 && item.联系电话 !== '无' ? `<div class="major-detail">电话: ${this.escapeHtml(item.联系电话)}</div>` : ''}
                             ${item.备注 ? `<div class="major-detail">备注: ${this.escapeHtml(item.备注)}</div>` : ''}
                         </div>
                     `;
@@ -823,13 +835,13 @@
                             <h3>🏫 基本信息</h3>
                             <div class="info-grid">
                                 <span class="info-label">学校类型</span>
-                                <span class="info-value">${this.escapeHtml(first.类型 || '未知')}</span>
+                                <span class="info-value">${this.escapeHtml(first.学校类型 || '未知')}</span>
                                 <span class="info-label">所在区域</span>
-                                <span class="info-value">${this.escapeHtml(first.区域 || '未知')}</span>
+                                <span class="info-value">${this.escapeHtml(first.所在区域 || '未知')}</span>
                                 <span class="info-label">联系电话</span>
-                                <span class="info-value">${this.escapeHtml(first.电话 || '暂无')}</span>
+                                <span class="info-value">${this.escapeHtml(first.联系电话 || '暂无')}</span>
                                 <span class="info-label">住宿情况</span>
-                                <span class="info-value">${this.escapeHtml(first.住宿 || '暂无')}</span>
+                                <span class="info-value">${this.escapeHtml(first.住宿情况 || '暂无')}</span>
                             </div>
                         </div>
 
@@ -857,8 +869,8 @@
                 
                 this.data.forEach(item => {
                     const batch = item.批次 || '未知';
-                    const region = item.区域 || '未知';
-                    const type = item.类型 ? item.类型.split(' ')[0] : '未知';
+                    const region = item.所在区域 || '未知';
+                    const type = item.学校类型 ? item.学校类型.split(' ')[0] : '未知';
                     
                     batchStats[batch] = (batchStats[batch] || 0) + 1;
                     regionStats[region] = (regionStats[region] || 0) + 1;
@@ -939,7 +951,21 @@
                     return;
                 }
 
-                const ws = XLSX.utils.json_to_sheet(this.filteredData);
+                // 准备导出数据（简化字段名）
+                const exportData = this.filteredData.map(item => ({
+                    '批次': item.批次,
+                    '学校': item.学校,
+                    '类型': item.学校类型,
+                    '区域': item.所在区域,
+                    '专业': item.专业,
+                    '计划': item.招生计划,
+                    '要求': item.录取要求,
+                    '住宿': item.住宿情况,
+                    '电话': item.联系电话,
+                    '备注': item.备注
+                }));
+
+                const ws = XLSX.utils.json_to_sheet(exportData);
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, '招生计划');
                 
