@@ -3,33 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>广州学校招生查询 - 修复版</title>
+    <title>广州学校招生查询系统 - 完整优化版</title>
     <style>
-        /* 保持原有样式不变，添加一些优化 */
-        .result-card {
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .result-card:hover {
-            background: #f0f7ff;
-        }
-        .result-card:active {
-            transform: scale(0.98);
-        }
-        .unknown-badge {
-            background: #95a5a6;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            margin-left: 6px;
-        }
-        .detail-loading {
-            text-align: center;
-            padding: 40px;
-            color: #3498db;
-        }
-        /* 其他样式保持不变... */
+        /* 保持原有样式，添加未知学校特殊样式 */
         * {
             margin: 0;
             padding: 0;
@@ -239,6 +215,11 @@
             background: #f0f7ff;
         }
 
+        .result-card.unknown-school {
+            opacity: 0.8;
+            border-left: 3px solid #95a5a6;
+        }
+
         .card-header {
             display: flex;
             justify-content: space-between;
@@ -253,6 +234,15 @@
             display: flex;
             align-items: center;
             gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .unknown-badge {
+            background: #95a5a6;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
         }
 
         .batch-badge {
@@ -488,6 +478,19 @@
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
+
+        /* 数据质量提示条 */
+        .quality-tip {
+            background: #e8f0fe;
+            padding: 6px 12px;
+            margin: 0 12px 8px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: #3498db;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
     </style>
 </head>
 <body>
@@ -535,6 +538,7 @@
         <div class="content-area">
             <!-- 列表页 -->
             <div id="tabList" class="tab-content active">
+                <div id="qualityTip" class="quality-tip" style="display: none;"></div>
                 <div id="resultList" class="result-list">
                     <div class="skeleton"></div>
                     <div class="skeleton"></div>
@@ -590,10 +594,20 @@
                 this.allData = [];
             }
 
+            // 清理学校名称，处理空值和无效数据
+            cleanSchoolName(name) {
+                if (!name || name === '' || name === 'null' || name === 'undefined') {
+                    return null;
+                }
+                // 去除首尾空格
+                const cleaned = String(name).trim();
+                if (cleaned === '') return null;
+                return cleaned;
+            }
+
             async loadAll() {
                 const baseUrl = 'https://raw.githubusercontent.com/slickchen/zk/main/js/data/';
                 
-                // 显示加载中
                 document.getElementById('headerStats').textContent = '加载数据中...';
                 
                 for (const file of this.files) {
@@ -604,14 +618,12 @@
                             continue;
                         }
                         const data = await response.json();
-                        
-                        // 确保数据是数组
                         const items = Array.isArray(data) ? data : [];
                         
-                        // 标准化数据格式 - 使用多种可能的字段名
-                        const batchData = items.map(item => {
-                            // 尝试多种可能的字段名
-                            const schoolName = item['学校名称'] || item['学校'] || item['schoolName'] || '未知';
+                        const batchData = [];
+                        for (const item of items) {
+                            // 清理学校名称
+                            let schoolName = this.cleanSchoolName(item['学校名称'] || item['学校'] || item['schoolName']);
                             const region = item['所在区域'] || item['区域'] || item['region'] || '未知';
                             const schoolType = item['学校类型'] || item['类型'] || item['schoolType'] || '未知';
                             const major = item['项目/专业'] || item['专业'] || item['major'] || '未知';
@@ -621,8 +633,22 @@
                             const phone = item['联系电话'] || item['电话'] || item['phone'] || '暂无';
                             const remark = item['备注'] || item['remark'] || '';
                             
-                            return {
-                                // 统一使用简洁字段名
+                            // 如果学校名称为空，尝试从专业名称中提取（如"广东华侨中学（港澳子弟班）"）
+                            if (!schoolName && major) {
+                                // 尝试匹配常见学校名称模式
+                                const schoolMatch = major.match(/^([^（(]+)[（(]/);
+                                if (schoolMatch) {
+                                    schoolName = schoolMatch[1].trim();
+                                }
+                            }
+                            
+                            // 如果仍然为空，跳过该条记录（避免显示"未知"）
+                            if (!schoolName) {
+                                console.log('跳过无学校名称的记录:', item);
+                                continue;
+                            }
+                            
+                            batchData.push({
                                 批次: file.batch,
                                 学校: schoolName,
                                 学校类型: schoolType,
@@ -633,21 +659,19 @@
                                 住宿情况: accommodation,
                                 联系电话: phone,
                                 备注: remark,
-                                
-                                // 添加唯一标识
                                 id: `${schoolName}-${major}-${file.batch}`
-                            };
-                        });
+                            });
+                        }
                         
                         this.allData = this.allData.concat(batchData);
-                        console.log(`✅ 已加载 ${file.name}: ${batchData.length}条`);
+                        console.log(`✅ 已加载 ${file.name}: ${batchData.length}条有效数据`);
                         
                     } catch (error) {
                         console.warn(`加载 ${file.name} 出错:`, error);
                     }
                 }
                 
-                // 简单去重
+                // 去重
                 const uniqueMap = new Map();
                 this.allData.forEach(item => {
                     const key = `${item.学校}-${item.专业}-${item.批次}`;
@@ -657,7 +681,10 @@
                 });
                 this.allData = Array.from(uniqueMap.values());
                 
-                console.log(`📊 总计加载: ${this.allData.length}条 (去重后)`);
+                // 按学校名称排序
+                this.allData.sort((a, b) => a.学校.localeCompare(b.学校, 'zh-CN'));
+                
+                console.log(`📊 最终有效数据: ${this.allData.length}条`);
                 return this.allData;
             }
         }
@@ -684,6 +711,7 @@
                 this.initFilters();
                 this.bindEvents();
                 this.renderList();
+                this.updateQualityTip();
             }
 
             async loadData() {
@@ -692,6 +720,16 @@
                 this.filteredData = [...this.data];
                 
                 document.getElementById('headerStats').textContent = `共${this.data.length}条`;
+            }
+
+            updateQualityTip() {
+                const tipEl = document.getElementById('qualityTip');
+                if (this.data.length > 0) {
+                    tipEl.style.display = 'flex';
+                    tipEl.innerHTML = `ℹ️ 已过滤无效数据，显示 ${this.data.length} 条有效招生信息`;
+                } else {
+                    tipEl.style.display = 'none';
+                }
             }
 
             initFilters() {
@@ -779,7 +817,7 @@
                     });
                 });
 
-                // 使用事件代理处理卡片点击
+                // 事件代理处理卡片点击
                 document.getElementById('resultList').addEventListener('click', (e) => {
                     const card = e.target.closest('.result-card');
                     if (card) {
@@ -874,15 +912,14 @@
                         simpleMajor = simpleMajor.substring(0, 22) + '...';
                     }
                     
-                    // 使用安全的学校名称传递
                     const safeSchoolName = this.encodeData(item.学校);
                     
+                    // 学校名称已经是有效的，不需要"未知"标签
                     html += `
                         <div class="result-card" data-school="${safeSchoolName}">
                             <div class="card-header">
                                 <span class="school-name">
                                     ${this.escapeHtml(item.学校)}
-                                    ${item.学校 === '未知' ? '<span class="unknown-badge">待补充</span>' : ''}
                                 </span>
                                 <span class="batch-badge">${this.escapeHtml((item.批次 || '').split('(')[0])}</span>
                             </div>
@@ -916,38 +953,25 @@
             }
 
             showDetail(encodedSchoolName) {
-                // 解码学校名称
                 const schoolName = encodedSchoolName.replace(/&quot;/g, '"').replace(/&#39;/g, "'");
                 
                 console.log('点击学校:', schoolName);
                 
-                if (!schoolName || schoolName === '未知') {
-                    this.showToast('该学校信息暂不完整，无法查看详情');
+                if (!schoolName) {
+                    this.showToast('无法获取学校信息');
                     return;
                 }
                 
-                // 查找该学校的所有记录（精确匹配）
+                // 查找该学校的所有记录
                 let items = this.data.filter(item => item.学校 === schoolName);
                 
-                console.log('精确匹配记录数:', items.length);
-                
-                // 如果没找到，尝试模糊匹配（处理括号差异）
                 if (items.length === 0) {
-                    // 移除所有括号和空格后比较
+                    // 归一化匹配
                     const normalizedSearch = schoolName.replace(/[（）()\s]/g, '');
                     items = this.data.filter(item => {
                         const normalizedItem = item.学校.replace(/[（）()\s]/g, '');
                         return normalizedItem === normalizedSearch;
                     });
-                    console.log('归一化匹配记录数:', items.length);
-                }
-                
-                // 如果还没找到，尝试包含匹配
-                if (items.length === 0) {
-                    items = this.data.filter(item => 
-                        item.学校 && item.学校.includes(schoolName.replace('（', '(').replace('）', ')'))
-                    );
-                    console.log('模糊匹配记录数:', items.length);
                 }
                 
                 if (items.length === 0) {
@@ -1075,32 +1099,12 @@
                 });
                 statsHtml += '</div>';
                 
-                // 统计未知数据
-                const unknownSchools = this.data.filter(item => item.学校 === '未知').length;
-                const unknownRegions = this.data.filter(item => item.所在区域 === '未知').length;
-                
-                statsHtml += `
-                    <div class="detail-section">
-                        <h3>📊 数据质量</h3>
-                        <div style="background:#f8fafc; padding:16px; border-radius:10px;">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                                <span>学校名称未知:</span>
-                                <span style="color:#e67e22;">${unknownSchools} 条</span>
-                            </div>
-                            <div style="display:flex; justify-content:space-between;">
-                                <span>所在区域未知:</span>
-                                <span style="color:#e67e22;">${unknownRegions} 条</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
                 statsHtml += `
                     <div class="detail-section">
                         <h3>📊 总计</h3>
                         <div style="text-align:center; padding:20px; background:#f8fafc; border-radius:10px;">
                             <span style="font-size:2rem; color:#3498db;">${this.data.length}</span>
-                            <span style="color:#666;">总记录数</span>
+                            <span style="color:#666;">有效招生记录数</span>
                         </div>
                     </div>
                 `;
