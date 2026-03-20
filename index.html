@@ -355,6 +355,17 @@
             gap: 4px;
         }
 
+        .debug-info {
+            background: #f0f0f0;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            color: #666;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
         .back-btn {
             background: #f0f4f9;
             border: none;
@@ -600,7 +611,7 @@
                 
                 document.getElementById('headerStats').textContent = `共${this.data.length}条`;
                 console.log('总数据:', this.data.length);
-                console.log('样例数据:', this.data[0]);
+                console.log('第一条数据样例:', this.data[0]);
             }
 
             initFilters() {
@@ -774,7 +785,7 @@
                     }
                     
                     // 转义学校名称中的特殊字符
-                    const safeSchoolName = schoolName.replace(/'/g, "\\'");
+                    const safeSchoolName = schoolName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     
                     html += `
                         <div class="result-card" onclick="app.showDetail('${safeSchoolName}')">
@@ -806,12 +817,27 @@
             }
 
             showDetail(schoolName) {
-                console.log('显示详情:', schoolName);
+                console.log('显示详情 - 学校名称:', schoolName);
                 
-                // 查找该学校的所有记录
+                // 查找该学校的所有记录（精确匹配）
                 const items = this.data.filter(item => item['学校名称'] === schoolName);
                 
+                console.log('找到记录数:', items.length);
+                console.log('第一条记录:', items[0]);
+                
                 if (items.length === 0) {
+                    // 尝试模糊匹配
+                    const fuzzyItems = this.data.filter(item => 
+                        item['学校名称'] && item['学校名称'].includes(schoolName)
+                    );
+                    console.log('模糊匹配记录数:', fuzzyItems.length);
+                    
+                    if (fuzzyItems.length > 0) {
+                        this.currentDetailSchool = fuzzyItems[0]['学校名称'];
+                        this.showDetail(this.currentDetailSchool);
+                        return;
+                    }
+                    
                     this.showToast('未找到学校详情');
                     return;
                 }
@@ -860,8 +886,16 @@
                     `;
                 });
                 
+                // 添加调试信息
                 detailHtml += `
                             </div>
+                        </div>
+                        
+                        <div class="debug-info">
+                            <strong>调试信息:</strong><br>
+                            学校名称: ${JSON.stringify(first['学校名称'])}<br>
+                            记录数: ${items.length}<br>
+                            字段: ${Object.keys(first).join(', ')}
                         </div>
                         
                         <button class="back-btn" onclick="app.switchTab('list')">
