@@ -23,6 +23,8 @@
             background: white;
             min-height: 100vh;
             box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
@@ -186,9 +188,14 @@
             cursor: pointer;
         }
 
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 60px;
+        }
+
         .result-list {
             padding: 12px;
-            min-height: 60vh;
         }
 
         .result-card {
@@ -199,6 +206,7 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             border: 1px solid #f0f4f9;
             cursor: pointer;
+            transition: transform 0.1s;
         }
 
         .result-card:active {
@@ -217,6 +225,7 @@
             font-weight: 600;
             font-size: 1rem;
             color: #2c3e50;
+            line-height: 1.4;
         }
 
         .batch-badge {
@@ -234,6 +243,12 @@
             margin-bottom: 6px;
             font-size: 0.8rem;
             color: #718096;
+        }
+
+        .card-info span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
         .card-desc {
@@ -304,6 +319,9 @@
             font-size: 1rem;
             color: #2c3e50;
             margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .info-grid {
@@ -361,6 +379,12 @@
             align-items: center;
             gap: 6px;
             margin-top: 12px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .back-btn:active {
+            background: #e2e8f0;
         }
 
         .bottom-nav {
@@ -368,8 +392,12 @@
             background: white;
             border-top: 1px solid #eef2f6;
             padding: 8px 0;
-            position: sticky;
+            position: fixed;
             bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 600px;
+            margin: 0 auto;
             z-index: 100;
         }
 
@@ -433,6 +461,15 @@
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
+
+        /* 标签页内容 */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -478,13 +515,37 @@
             </button>
         </div>
 
-        <div id="contentArea">
-            <div class="result-list">
-                <div class="skeleton"></div>
-                <div class="skeleton"></div>
-                <div class="skeleton"></div>
-                <div class="skeleton"></div>
-                <div class="skeleton"></div>
+        <!-- 标签页容器 -->
+        <div class="content-area">
+            <!-- 列表标签页 -->
+            <div id="tabList" class="tab-content active">
+                <div id="resultList" class="result-list">
+                    <div class="skeleton"></div>
+                    <div class="skeleton"></div>
+                    <div class="skeleton"></div>
+                    <div class="skeleton"></div>
+                    <div class="skeleton"></div>
+                </div>
+            </div>
+
+            <!-- 详情标签页 -->
+            <div id="tabDetail" class="tab-content">
+                <div id="detailContent" class="detail-card">
+                    <div class="empty-state">
+                        <div class="emoji">👆</div>
+                        <div>点击搜索结果查看详情</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 统计标签页 -->
+            <div id="tabStats" class="tab-content">
+                <div id="statsContent" class="detail-card">
+                    <div class="empty-state">
+                        <div class="emoji">📊</div>
+                        <div>加载统计信息...</div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -538,30 +599,18 @@
                         }
                         const data = await response.json();
                         
-                        // 标准化字段名 - 适配你的JSON格式
+                        // 标准化字段名
                         const batchData = data.map(item => ({
-                            // 保留原始字段，同时添加标准化字段
                             批次: file.batch,
                             学校: item['学校名称'] || '未知',
                             学校类型: item['学校类型'] || '未知',
                             所在区域: item['所在区域'] || '未知',
                             专业: item['项目/专业'] || '未知',
-                            招生计划: item['招生计划'] || '未知',
+                            招生计划: item['招生计划'] || '0',
                             录取要求: item['录取要求'] || '无',
                             住宿情况: item['住宿情况'] || '未知',
                             联系电话: item['联系电话'] || '无',
-                            备注: item['备注'] || '',
-                            
-                            // 同时保留原字段名，方便其他用途
-                            schoolName: item['学校名称'] || '未知',
-                            schoolType: item['学校类型'] || '未知',
-                            region: item['所在区域'] || '未知',
-                            major: item['项目/专业'] || '未知',
-                            plan: item['招生计划'] || '未知',
-                            requirement: item['录取要求'] || '无',
-                            accommodation: item['住宿情况'] || '未知',
-                            phone: item['联系电话'] || '无',
-                            remark: item['备注'] || ''
+                            备注: item['备注'] || ''
                         }));
                         
                         this.allData = this.allData.concat(batchData);
@@ -588,6 +637,7 @@
                 this.regionFilter = 'all';
                 this.pageSize = 50;
                 this.currentPage = 1;
+                this.currentTab = 'list';
                 
                 this.init();
             }
@@ -685,16 +735,18 @@
 
                 document.getElementById('exportBtn').addEventListener('click', () => this.exportData());
 
+                // 底部导航切换
                 document.querySelectorAll('.nav-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
-                        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                        e.target.closest('.nav-btn').classList.add('active');
-                        this.switchTab(e.target.closest('.nav-btn').dataset.tab);
+                        const tab = e.currentTarget.dataset.tab;
+                        this.switchTab(tab);
                     });
                 });
 
-                // 无限滚动
+                // 无限滚动（只在列表页生效）
                 window.addEventListener('scroll', () => {
+                    if (this.currentTab !== 'list') return;
+                    
                     const scrollHeight = document.documentElement.scrollHeight;
                     const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
                     const clientHeight = document.documentElement.clientHeight;
@@ -720,7 +772,6 @@
                                 if (!item.学校?.toLowerCase().includes(keyword)) return false;
                                 break;
                             case 'major':
-                                // 搜索专业和备注
                                 const majorMatch = item.专业?.toLowerCase().includes(keyword);
                                 const remarkMatch = item.备注?.toLowerCase().includes(keyword);
                                 if (!majorMatch && !remarkMatch) return false;
@@ -741,7 +792,7 @@
             }
 
             renderList(append = false) {
-                const container = document.getElementById('contentArea');
+                const container = document.getElementById('resultList');
                 document.getElementById('resultCount').textContent = `${this.filteredData.length} 条记录`;
                 
                 if (this.filteredData.length === 0) {
@@ -759,7 +810,7 @@
                 const end = this.currentPage * this.pageSize;
                 const displayData = this.filteredData.slice(start, end);
                 
-                let html = '<div class="result-list">';
+                let html = '';
                 
                 displayData.forEach(item => {
                     // 简化专业名称
@@ -768,8 +819,11 @@
                         simpleMajor = simpleMajor.split('【')[0].trim();
                     }
                     
+                    // 转义学校名称中的特殊字符
+                    const safeSchoolName = item.学校.replace(/'/g, "\\'");
+                    
                     html += `
-                        <div class="result-card" onclick="app.showDetail('${item.学校?.replace(/'/g, "\\'") || ''}')">
+                        <div class="result-card" onclick="app.showDetail('${safeSchoolName}')">
                             <div class="card-header">
                                 <span class="school-name">${this.escapeHtml(item.学校 || '未知')}</span>
                                 <span class="batch-badge">${this.escapeHtml((item.批次 || '').split('(')[0])}</span>
@@ -791,8 +845,6 @@
                 } else if (this.filteredData.length > this.pageSize) {
                     html += `<div class="load-more">已显示全部 ${this.filteredData.length} 条</div>`;
                 }
-
-                html += '</div>';
                 
                 if (append) {
                     container.innerHTML += html;
@@ -803,7 +855,10 @@
 
             showDetail(schoolName) {
                 const items = this.data.filter(item => item.学校 === schoolName);
-                if (items.length === 0) return;
+                if (items.length === 0) {
+                    this.showToast('未找到学校详情');
+                    return;
+                }
 
                 this.currentDetailSchool = schoolName;
                 this.switchTab('detail');
@@ -815,11 +870,11 @@
                     majorList += `
                         <div class="major-item">
                             <div class="major-name">${index + 1}. ${this.escapeHtml(item.专业 || '未知')}</div>
-                            <div class="major-detail">计划: ${this.escapeHtml(item.招生计划 || '0')}</div>
-                            <div class="major-detail">要求: ${this.escapeHtml(item.录取要求 || '无')}</div>
-                            ${item.住宿情况 && item.住宿情况 !== '未知' ? `<div class="major-detail">住宿: ${this.escapeHtml(item.住宿情况)}</div>` : ''}
-                            ${item.联系电话 && item.联系电话 !== '无' ? `<div class="major-detail">电话: ${this.escapeHtml(item.联系电话)}</div>` : ''}
-                            ${item.备注 ? `<div class="major-detail">备注: ${this.escapeHtml(item.备注)}</div>` : ''}
+                            <div class="major-detail">📋 计划: ${this.escapeHtml(item.招生计划 || '0')}</div>
+                            <div class="major-detail">📌 要求: ${this.escapeHtml(item.录取要求 || '无')}</div>
+                            ${item.住宿情况 && item.住宿情况 !== '未知' ? `<div class="major-detail">🏠 住宿: ${this.escapeHtml(item.住宿情况)}</div>` : ''}
+                            ${item.联系电话 && item.联系电话 !== '无' ? `<div class="major-detail">📞 电话: ${this.escapeHtml(item.联系电话)}</div>` : ''}
+                            ${item.备注 ? `<div class="major-detail">📝 备注: ${this.escapeHtml(item.备注)}</div>` : ''}
                         </div>
                     `;
                 });
@@ -859,7 +914,7 @@
                     </div>
                 `;
 
-                document.getElementById('contentArea').innerHTML = detailHtml;
+                document.getElementById('detailContent').innerHTML = detailHtml;
             }
 
             renderStats() {
@@ -877,7 +932,7 @@
                     typeStats[type] = (typeStats[type] || 0) + 1;
                 });
 
-                let statsHtml = '<div class="detail-card">';
+                let statsHtml = '';
                 
                 statsHtml += '<div class="detail-section"><h3>📦 按批次统计</h3>';
                 Object.entries(batchStats).sort((a,b) => b[1] - a[1]).forEach(([batch, count]) => {
@@ -922,18 +977,34 @@
                     </div>
                 `;
                 
-                statsHtml += '</div>';
-                document.getElementById('contentArea').innerHTML = statsHtml;
+                document.getElementById('statsContent').innerHTML = statsHtml;
             }
 
             switchTab(tab) {
+                this.currentTab = tab;
+                
+                // 更新导航按钮状态
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.tab === tab) {
+                        btn.classList.add('active');
+                    }
+                });
+                
+                // 切换标签页显示
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.add('active');
+                
+                // 根据标签页渲染内容
                 if (tab === 'list') {
                     this.renderList();
                 } else if (tab === 'detail') {
                     if (this.currentDetailSchool) {
                         this.showDetail(this.currentDetailSchool);
                     } else {
-                        document.getElementById('contentArea').innerHTML = `
+                        document.getElementById('detailContent').innerHTML = `
                             <div class="empty-state">
                                 <div class="emoji">👆</div>
                                 <div>点击搜索结果查看详情</div>
@@ -951,7 +1022,6 @@
                     return;
                 }
 
-                // 准备导出数据（简化字段名）
                 const exportData = this.filteredData.map(item => ({
                     '批次': item.批次,
                     '学校': item.学校,
@@ -993,6 +1063,7 @@
 
         // ========== 启动应用 ==========
         const app = new SchoolQueryApp();
+        window.app = app; // 使app全局可用，方便onclick调用
     </script>
 </body>
 </html>
