@@ -3,31 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>广州学校招生查询系统 - 优化版</title>
+    <title>广州学校招生查询系统 - 最终优化版</title>
     <style>
-        /* 保持原有样式不变，添加一些优化 */
-        .detail-loading {
-            text-align: center;
-            padding: 40px;
-            color: #3498db;
-        }
-        .error-message {
-            background: #fee;
-            color: #c00;
-            padding: 12px;
-            border-radius: 8px;
-            margin: 12px;
-            text-align: center;
-        }
-        .unknown-badge {
-            background: #95a5a6;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            margin-left: 6px;
-        }
-        /* 原有其他样式保持不变 */
         * {
             margin: 0;
             padding: 0;
@@ -60,11 +37,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .header h1 {
             font-size: 1.2rem;
             font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .header-stats {
@@ -85,6 +66,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .search-section {
@@ -106,6 +88,7 @@
             border-radius: 25px;
             font-size: 0.95rem;
             background: #f8fafc;
+            transition: all 0.2s;
         }
 
         .search-input:focus {
@@ -209,6 +192,7 @@
             flex: 1;
             overflow-y: auto;
             padding-bottom: 60px;
+            min-height: 60vh;
         }
 
         .result-list {
@@ -245,6 +229,15 @@
             display: flex;
             align-items: center;
             gap: 4px;
+        }
+
+        .unknown-badge {
+            background: #95a5a6;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-left: 6px;
         }
 
         .batch-badge {
@@ -382,17 +375,6 @@
             gap: 4px;
         }
 
-        .debug-info {
-            background: #f0f0f0;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            font-size: 0.8rem;
-            color: #666;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-
         .back-btn {
             background: #f0f4f9;
             border: none;
@@ -418,12 +400,8 @@
             background: white;
             border-top: 1px solid #eef2f6;
             padding: 8px 0;
-            position: fixed;
+            position: sticky;
             bottom: 0;
-            left: 0;
-            right: 0;
-            max-width: 600px;
-            margin: 0 auto;
             z-index: 100;
         }
 
@@ -481,6 +459,20 @@
         .tab-content.active {
             display: block;
         }
+
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+            height: 80px;
+            margin-bottom: 10px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
     </style>
 </head>
 <body>
@@ -528,7 +520,13 @@
         <div class="content-area">
             <!-- 列表页 -->
             <div id="tabList" class="tab-content active">
-                <div id="resultList" class="result-list"></div>
+                <div id="resultList" class="result-list">
+                    <div class="skeleton"></div>
+                    <div class="skeleton"></div>
+                    <div class="skeleton"></div>
+                    <div class="skeleton"></div>
+                    <div class="skeleton"></div>
+                </div>
             </div>
 
             <!-- 详情页 -->
@@ -575,62 +573,64 @@
                     { name: 'batch4-tech.json', batch: '第四批次(技工学校)' }
                 ];
                 this.allData = [];
-                this.loadedCount = 0;
-                this.failedFiles = [];
             }
 
             async loadAll() {
                 const baseUrl = 'https://raw.githubusercontent.com/slickchen/zk/main/js/data/';
-                const loadPromises = this.files.map(async (file) => {
+                
+                // 显示加载中
+                document.getElementById('headerStats').textContent = '加载数据中...';
+                
+                for (const file of this.files) {
                     try {
                         const response = await fetch(baseUrl + file.name);
                         if (!response.ok) {
-                            throw new Error(`HTTP ${response.status}`);
+                            console.warn(`加载 ${file.name} 失败: ${response.status}`);
+                            continue;
                         }
                         const data = await response.json();
                         
                         // 确保数据是数组
                         const items = Array.isArray(data) ? data : [];
                         
-                        // 添加批次信息，并处理可能的空值
+                        // 标准化数据格式
                         const batchData = items.map(item => ({
-                            ...item,
-                            招生批次: file.batch,
-                            // 确保关键字段存在
+                            // 简化字段名（与可工作版本保持一致）
+                            批次: file.batch,
+                            学校: item['学校名称'] || '未知',
+                            学校类型: item['学校类型'] || '未知',
+                            所在区域: item['所在区域'] || '未知',
+                            专业: item['项目/专业'] || '未知',
+                            招生计划: item['招生计划'] || '0',
+                            录取要求: item['录取要求'] || '无',
+                            住宿情况: item['住宿情况'] || '未知',
+                            联系电话: item['联系电话'] || '暂无',
+                            备注: item['备注'] || '',
+                            
+                            // 同时保留原始字段以便兼容
                             '学校名称': item['学校名称'] || '未知',
-                            '所在区域': item['所在区域'] || '未知',
-                            '学校类型': item['学校类型'] || '未知',
                             '项目/专业': item['项目/专业'] || '未知',
-                            '招生计划': item['招生计划'] || '0',
-                            '联系电话': item['联系电话'] || '暂无',
-                            '住宿情况': item['住宿情况'] || '未知',
-                            '录取要求': item['录取要求'] || '无',
-                            '备注': item['备注'] || ''
+                            招生批次: file.batch
                         }));
                         
                         this.allData = this.allData.concat(batchData);
-                        this.loadedCount += batchData.length;
                         console.log(`✅ 已加载 ${file.name}: ${batchData.length}条`);
                         
                     } catch (error) {
-                        console.warn(`⚠️ 加载 ${file.name} 失败:`, error.message);
-                        this.failedFiles.push(file.name);
+                        console.warn(`加载 ${file.name} 出错:`, error);
                     }
-                });
-
-                await Promise.allSettled(loadPromises);
+                }
                 
-                // 去重处理（基于学校名称和专业）
+                // 简单去重（基于学校+专业）
                 const uniqueMap = new Map();
                 this.allData.forEach(item => {
-                    const key = `${item['学校名称']}-${item['项目/专业']}-${item.招生批次}`;
+                    const key = `${item.学校}-${item.专业}-${item.批次}`;
                     if (!uniqueMap.has(key)) {
                         uniqueMap.set(key, item);
                     }
                 });
                 this.allData = Array.from(uniqueMap.values());
                 
-                console.log(`📊 总计加载: ${this.allData.length}条 (去重后), 失败文件: ${this.failedFiles.length}个`);
                 return this.allData;
             }
         }
@@ -648,26 +648,15 @@
                 this.pageSize = 50;
                 this.currentPage = 1;
                 this.currentTab = 'list';
-                this.isLoading = true;
                 
                 this.init();
             }
 
             async init() {
-                this.showLoading();
                 await this.loadData();
-                this.hideLoading();
                 this.initFilters();
                 this.bindEvents();
                 this.renderList();
-            }
-
-            showLoading() {
-                document.getElementById('headerStats').textContent = '加载数据中...';
-            }
-
-            hideLoading() {
-                document.getElementById('headerStats').textContent = `共${this.data.length}条`;
             }
 
             async loadData() {
@@ -675,12 +664,13 @@
                 this.data = await loader.loadAll();
                 this.filteredData = [...this.data];
                 
-                console.log('第一条数据样例:', this.data[0]);
+                document.getElementById('headerStats').textContent = `共${this.data.length}条`;
+                console.log('总数据:', this.data.length);
             }
 
             initFilters() {
-                const batches = [...new Set(this.data.map(item => item.招生批次).filter(Boolean))];
-                const regions = [...new Set(this.data.map(item => item['所在区域']).filter(v => v && v !== '未知'))];
+                const batches = [...new Set(this.data.map(item => item.批次).filter(Boolean))];
+                const regions = [...new Set(this.data.map(item => item.所在区域).filter(v => v && v !== '未知'))];
 
                 const batchSelect = document.getElementById('batchFilter');
                 batches.sort().forEach(batch => {
@@ -758,6 +748,8 @@
 
                 document.querySelectorAll('.nav-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                        e.currentTarget.classList.add('active');
                         const tab = e.currentTarget.dataset.tab;
                         this.switchTab(tab);
                     });
@@ -782,8 +774,8 @@
 
             applyFilters() {
                 this.filteredData = this.data.filter(item => {
-                    if (this.batchFilter !== 'all' && item.招生批次 !== this.batchFilter) return false;
-                    if (this.regionFilter !== 'all' && item['所在区域'] !== this.regionFilter) return false;
+                    if (this.batchFilter !== 'all' && item.批次 !== this.batchFilter) return false;
+                    if (this.regionFilter !== 'all' && item.所在区域 !== this.regionFilter) return false;
                     
                     if (this.searchKeyword) {
                         const keyword = this.searchKeyword.toLowerCase().trim();
@@ -791,18 +783,18 @@
                         
                         switch(this.searchType) {
                             case 'school':
-                                if (!item['学校名称']?.toLowerCase().includes(keyword)) return false;
+                                if (!item.学校?.toLowerCase().includes(keyword)) return false;
                                 break;
                             case 'major':
-                                const majorMatch = item['项目/专业']?.toLowerCase().includes(keyword);
-                                const remarkMatch = item['备注']?.toLowerCase().includes(keyword);
+                                const majorMatch = item.专业?.toLowerCase().includes(keyword);
+                                const remarkMatch = item.备注?.toLowerCase().includes(keyword);
                                 if (!majorMatch && !remarkMatch) return false;
                                 break;
                             case 'region':
-                                if (!item['所在区域']?.toLowerCase().includes(keyword)) return false;
+                                if (!item.所在区域?.toLowerCase().includes(keyword)) return false;
                                 break;
                             case 'batch':
-                                if (!item.招生批次?.toLowerCase().includes(keyword)) return false;
+                                if (!item.批次?.toLowerCase().includes(keyword)) return false;
                                 break;
                         }
                     }
@@ -835,15 +827,8 @@
                 let html = '';
                 
                 displayData.forEach(item => {
-                    const schoolName = item['学校名称'] || '未知';
-                    const region = item['所在区域'] || '未知';
-                    const schoolType = item['学校类型'] || '未知';
-                    const major = item['项目/专业'] || '未知';
-                    const plan = item['招生计划'] || '0';
-                    const batch = item.招生批次 || '未知';
-                    
                     // 简化专业名称
-                    let simpleMajor = major;
+                    let simpleMajor = item.专业 || '未知';
                     if (simpleMajor.includes('【')) {
                         simpleMajor = simpleMajor.split('【')[0].trim();
                     }
@@ -854,23 +839,25 @@
                         simpleMajor = simpleMajor.substring(0, 22) + '...';
                     }
                     
-                    // 使用 data-* 属性存储学校名称，避免引号问题
+                    // 使用安全的学校名称传递
+                    const safeSchoolName = this.encodeData(item.学校);
+                    
                     html += `
-                        <div class="result-card" data-schoolname="${this.encodeData(schoolName)}" onclick="app.showDetail(this.dataset.schoolname)">
+                        <div class="result-card" data-school="${safeSchoolName}" onclick="app.showDetail(this.dataset.school)">
                             <div class="card-header">
                                 <span class="school-name">
-                                    ${this.escapeHtml(schoolName)}
-                                    ${schoolName === '未知' ? '<span class="unknown-badge">待补充</span>' : ''}
+                                    ${this.escapeHtml(item.学校)}
+                                    ${item.学校 === '未知' ? '<span class="unknown-badge">待补充</span>' : ''}
                                 </span>
-                                <span class="batch-badge">${this.escapeHtml(batch.split('(')[0])}</span>
+                                <span class="batch-badge">${this.escapeHtml((item.批次 || '').split('(')[0])}</span>
                             </div>
                             <div class="card-info">
-                                <span>📍 ${this.escapeHtml(region)}</span>
-                                <span>🏫 ${this.escapeHtml(schoolType.split(' ')[0])}</span>
+                                <span>📍 ${this.escapeHtml(item.所在区域)}</span>
+                                <span>🏫 ${this.escapeHtml((item.学校类型 || '').split(' ')[0])}</span>
                             </div>
                             <div class="card-desc">
                                 <span class="major">📖 ${this.escapeHtml(simpleMajor)}</span>
-                                <span class="plan">👥 ${this.escapeHtml(plan)}</span>
+                                <span class="plan">👥 ${this.escapeHtml(item.招生计划)}</span>
                             </div>
                         </div>
                     `;
@@ -878,6 +865,8 @@
 
                 if (this.filteredData.length > end) {
                     html += `<div class="load-more">下拉加载更多... (${end}/${this.filteredData.length})</div>`;
+                } else if (this.filteredData.length > this.pageSize) {
+                    html += `<div class="load-more">已显示全部 ${this.filteredData.length} 条</div>`;
                 }
                 
                 if (append) {
@@ -894,24 +883,20 @@
             showDetail(encodedSchoolName) {
                 // 解码学校名称
                 const schoolName = encodedSchoolName.replace(/&quot;/g, '"').replace(/&#39;/g, "'");
-                console.log('显示详情 - 学校名称:', schoolName);
                 
                 if (!schoolName || schoolName === '未知') {
                     this.showToast('该学校信息暂不完整，无法查看详情');
                     return;
                 }
                 
-                // 查找该学校的所有记录（精确匹配）
-                let items = this.data.filter(item => item['学校名称'] === schoolName);
+                // 查找该学校的所有记录
+                let items = this.data.filter(item => item.学校 === schoolName);
                 
-                console.log('精确匹配记录数:', items.length);
-                
-                // 如果没有精确匹配，尝试模糊匹配
+                // 如果没找到，尝试模糊匹配
                 if (items.length === 0) {
                     items = this.data.filter(item => 
-                        item['学校名称'] && item['学校名称'].includes(schoolName.replace('（', '(').replace('）', ')'))
+                        item.学校 && item.学校.includes(schoolName.replace('（', '(').replace('）', ')'))
                     );
-                    console.log('模糊匹配记录数:', items.length);
                 }
                 
                 if (items.length === 0) {
@@ -919,77 +904,59 @@
                     return;
                 }
 
-                this.currentDetailSchool = items[0]['学校名称'];
+                this.currentDetailSchool = items[0].学校;
                 this.switchTab('detail');
                 
                 const first = items[0];
+                let majorList = '';
                 
-                // 构建基本信息
-                let detailHtml = `
+                items.forEach((item, index) => {
+                    majorList += `
+                        <div class="major-item">
+                            <div class="major-name">${index + 1}. ${this.escapeHtml(item.专业 || '未知')}</div>
+                            <div class="major-detail">📋 计划: ${this.escapeHtml(item.招生计划 || '0')}</div>
+                            <div class="major-detail">📌 要求: ${this.escapeHtml(item.录取要求 || '无')}</div>
+                            ${item.住宿情况 && item.住宿情况 !== '未知' ? `<div class="major-detail">🏠 住宿: ${this.escapeHtml(item.住宿情况)}</div>` : ''}
+                            ${item.联系电话 && item.联系电话 !== '暂无' ? `<div class="major-detail">📞 电话: ${this.escapeHtml(item.联系电话)}</div>` : ''}
+                            ${item.备注 ? `<div class="major-detail">📝 备注: ${this.escapeHtml(item.备注)}</div>` : ''}
+                        </div>
+                    `;
+                });
+
+                const detailHtml = `
                     <div class="detail-card">
                         <div class="detail-header">
-                            <h2>${this.escapeHtml(first['学校名称'])}</h2>
-                            <span class="detail-batch">${this.escapeHtml(first.招生批次 || '未知')}</span>
+                            <h2>${this.escapeHtml(first.学校)}</h2>
+                            <span class="detail-batch">${this.escapeHtml(first.批次 || '未知')}</span>
                         </div>
                         
                         <div class="detail-section">
                             <h3>🏫 基本信息</h3>
                             <div class="info-grid">
                                 <span class="info-label">学校类型</span>
-                                <span class="info-value">${this.escapeHtml(first['学校类型'] || '未知')}</span>
+                                <span class="info-value">${this.escapeHtml(first.学校类型 || '未知')}</span>
                                 <span class="info-label">所在区域</span>
-                                <span class="info-value">${this.escapeHtml(first['所在区域'] || '未知')}</span>
+                                <span class="info-value">${this.escapeHtml(first.所在区域 || '未知')}</span>
                                 <span class="info-label">联系电话</span>
-                                <span class="info-value">${this.escapeHtml(first['联系电话'] || '暂无')}</span>
+                                <span class="info-value">${this.escapeHtml(first.联系电话 || '暂无')}</span>
                                 <span class="info-label">住宿情况</span>
-                                <span class="info-value">${this.escapeHtml(first['住宿情况'] || '暂无')}</span>
+                                <span class="info-value">${this.escapeHtml(first.住宿情况 || '暂无')}</span>
                             </div>
                         </div>
 
                         <div class="detail-section">
                             <h3>📚 招生项目 (${items.length})</h3>
                             <div class="major-list">
-                `;
-                
-                // 列出所有招生项目
-                items.forEach((item, index) => {
-                    const plan = item['招生计划'] || '0';
-                    const requirement = item['录取要求'] || '无';
-                    const remark = item['备注'] || '';
-                    
-                    detailHtml += `
-                        <div class="major-item">
-                            <div class="major-name">${index + 1}. ${this.escapeHtml(item['项目/专业'] || '未知')}</div>
-                            <div class="major-detail">📋 计划: ${this.escapeHtml(plan)}</div>
-                            <div class="major-detail">📌 要求: ${this.escapeHtml(requirement)}</div>
-                            ${remark ? `<div class="major-detail">📝 备注: ${this.escapeHtml(remark)}</div>` : ''}
-                        </div>
-                    `;
-                });
-                
-                // 添加调试信息（可注释掉）
-                // detailHtml += `
-                //             </div>
-                //         </div>
-                //         
-                //         <div class="debug-info">
-                //             <strong>调试信息:</strong><br>
-                //             学校名称: ${JSON.stringify(first['学校名称'])}<br>
-                //             记录数: ${items.length}<br>
-                //             字段: ${Object.keys(first).join(', ')}
-                //         </div>
-                // `;
-                
-                detailHtml += `
+                                ${majorList}
                             </div>
                         </div>
-                        
+
                         <button class="back-btn" onclick="app.switchTab('list')">
                             <span>←</span> 返回列表
                         </button>
                     </div>
                 `;
-                
+
                 document.getElementById('detailContent').innerHTML = detailHtml;
             }
 
@@ -999,9 +966,9 @@
                 const typeStats = {};
                 
                 this.data.forEach(item => {
-                    const batch = item.招生批次 || '未知';
-                    const region = item['所在区域'] || '未知';
-                    const type = item['学校类型'] ? item['学校类型'].split(' ')[0] : '未知';
+                    const batch = item.批次 || '未知';
+                    const region = item.所在区域 || '未知';
+                    const type = item.学校类型 ? item.学校类型.split(' ')[0] : '未知';
                     
                     batchStats[batch] = (batchStats[batch] || 0) + 1;
                     regionStats[region] = (regionStats[region] || 0) + 1;
@@ -1043,9 +1010,9 @@
                 });
                 statsHtml += '</div>';
                 
-                // 统计"未知"数据的数量
-                const unknownSchools = this.data.filter(item => item['学校名称'] === '未知').length;
-                const unknownRegions = this.data.filter(item => item['所在区域'] === '未知').length;
+                // 统计未知数据
+                const unknownSchools = this.data.filter(item => item.学校 === '未知').length;
+                const unknownRegions = this.data.filter(item => item.所在区域 === '未知').length;
                 
                 statsHtml += `
                     <div class="detail-section">
@@ -1115,16 +1082,16 @@
                 }
 
                 const exportData = this.filteredData.map(item => ({
-                    '批次': item.招生批次,
-                    '学校名称': item['学校名称'],
-                    '学校类型': item['学校类型'],
-                    '所在区域': item['所在区域'],
-                    '项目/专业': item['项目/专业'],
-                    '招生计划': item['招生计划'],
-                    '录取要求': item['录取要求'],
-                    '住宿情况': item['住宿情况'],
-                    '联系电话': item['联系电话'],
-                    '备注': item['备注']
+                    '批次': item.批次,
+                    '学校名称': item.学校,
+                    '学校类型': item.学校类型,
+                    '所在区域': item.所在区域,
+                    '项目/专业': item.专业,
+                    '招生计划': item.招生计划,
+                    '录取要求': item.录取要求,
+                    '住宿情况': item.住宿情况,
+                    '联系电话': item.联系电话,
+                    '备注': item.备注
                 }));
 
                 const ws = XLSX.utils.json_to_sheet(exportData);
