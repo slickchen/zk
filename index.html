@@ -3,8 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>广州学校招生查询系统</title>
+    <title>广州学校招生查询系统 - 优化版</title>
     <style>
+        /* 保持原有样式不变，添加一些优化 */
+        .detail-loading {
+            text-align: center;
+            padding: 40px;
+            color: #3498db;
+        }
+        .error-message {
+            background: #fee;
+            color: #c00;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 12px;
+            text-align: center;
+        }
+        .unknown-badge {
+            background: #95a5a6;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-left: 6px;
+        }
+        /* 原有其他样式保持不变 */
         * {
             margin: 0;
             padding: 0;
@@ -200,6 +223,7 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             border: 1px solid #f0f4f9;
             cursor: pointer;
+            transition: transform 0.1s ease;
         }
 
         .result-card:active {
@@ -218,6 +242,9 @@
             font-weight: 600;
             font-size: 1rem;
             color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
         .batch-badge {
@@ -548,34 +575,62 @@
                     { name: 'batch4-tech.json', batch: '第四批次(技工学校)' }
                 ];
                 this.allData = [];
+                this.loadedCount = 0;
+                this.failedFiles = [];
             }
 
             async loadAll() {
                 const baseUrl = 'https://raw.githubusercontent.com/slickchen/zk/main/js/data/';
-                
-                for (const file of this.files) {
+                const loadPromises = this.files.map(async (file) => {
                     try {
                         const response = await fetch(baseUrl + file.name);
                         if (!response.ok) {
-                            console.warn(`加载 ${file.name} 失败`);
-                            continue;
+                            throw new Error(`HTTP ${response.status}`);
                         }
                         const data = await response.json();
                         
-                        // 直接使用原始数据，只添加批次信息
-                        const batchData = data.map(item => ({
+                        // 确保数据是数组
+                        const items = Array.isArray(data) ? data : [];
+                        
+                        // 添加批次信息，并处理可能的空值
+                        const batchData = items.map(item => ({
                             ...item,
-                            招生批次: file.batch
+                            招生批次: file.batch,
+                            // 确保关键字段存在
+                            '学校名称': item['学校名称'] || '未知',
+                            '所在区域': item['所在区域'] || '未知',
+                            '学校类型': item['学校类型'] || '未知',
+                            '项目/专业': item['项目/专业'] || '未知',
+                            '招生计划': item['招生计划'] || '0',
+                            '联系电话': item['联系电话'] || '暂无',
+                            '住宿情况': item['住宿情况'] || '未知',
+                            '录取要求': item['录取要求'] || '无',
+                            '备注': item['备注'] || ''
                         }));
                         
                         this.allData = this.allData.concat(batchData);
+                        this.loadedCount += batchData.length;
                         console.log(`✅ 已加载 ${file.name}: ${batchData.length}条`);
                         
                     } catch (error) {
-                        console.warn(`加载 ${file.name} 出错:`, error);
+                        console.warn(`⚠️ 加载 ${file.name} 失败:`, error.message);
+                        this.failedFiles.push(file.name);
                     }
-                }
+                });
+
+                await Promise.allSettled(loadPromises);
                 
+                // 去重处理（基于学校名称和专业）
+                const uniqueMap = new Map();
+                this.allData.forEach(item => {
+                    const key = `${item['学校名称']}-${item['项目/专业']}-${item.招生批次}`;
+                    if (!uniqueMap.has(key)) {
+                        uniqueMap.set(key, item);
+                    }
+                });
+                this.allData = Array.from(uniqueMap.values());
+                
+                console.log(`📊 总计加载: ${this.allData.length}条 (去重后), 失败文件: ${this.failedFiles.length}个`);
                 return this.allData;
             }
         }
@@ -593,15 +648,26 @@
                 this.pageSize = 50;
                 this.currentPage = 1;
                 this.currentTab = 'list';
+                this.isLoading = true;
                 
                 this.init();
             }
 
             async init() {
+                this.showLoading();
                 await this.loadData();
+                this.hideLoading();
                 this.initFilters();
                 this.bindEvents();
                 this.renderList();
+            }
+
+            showLoading() {
+                document.getElementById('headerStats').textContent = '加载数据中...';
+            }
+
+            hideLoading() {
+                document.getElementById('headerStats').textContent = `共${this.data.length}条`;
             }
 
             async loadData() {
@@ -609,14 +675,12 @@
                 this.data = await loader.loadAll();
                 this.filteredData = [...this.data];
                 
-                document.getElementById('headerStats').textContent = `共${this.data.length}条`;
-                console.log('总数据:', this.data.length);
                 console.log('第一条数据样例:', this.data[0]);
             }
 
             initFilters() {
                 const batches = [...new Set(this.data.map(item => item.招生批次).filter(Boolean))];
-                const regions = [...new Set(this.data.map(item => item['所在区域']).filter(Boolean))];
+                const regions = [...new Set(this.data.map(item => item['所在区域']).filter(v => v && v !== '未知'))];
 
                 const batchSelect = document.getElementById('batchFilter');
                 batches.sort().forEach(batch => {
@@ -722,14 +786,17 @@
                     if (this.regionFilter !== 'all' && item['所在区域'] !== this.regionFilter) return false;
                     
                     if (this.searchKeyword) {
-                        const keyword = this.searchKeyword.toLowerCase();
+                        const keyword = this.searchKeyword.toLowerCase().trim();
+                        if (!keyword) return true;
+                        
                         switch(this.searchType) {
                             case 'school':
                                 if (!item['学校名称']?.toLowerCase().includes(keyword)) return false;
                                 break;
                             case 'major':
-                                if (!item['项目/专业']?.toLowerCase().includes(keyword) && 
-                                    !item['备注']?.toLowerCase().includes(keyword)) return false;
+                                const majorMatch = item['项目/专业']?.toLowerCase().includes(keyword);
+                                const remarkMatch = item['备注']?.toLowerCase().includes(keyword);
+                                if (!majorMatch && !remarkMatch) return false;
                                 break;
                             case 'region':
                                 if (!item['所在区域']?.toLowerCase().includes(keyword)) return false;
@@ -762,7 +829,7 @@
                 }
 
                 const start = 0;
-                const end = this.currentPage * this.pageSize;
+                const end = Math.min(this.currentPage * this.pageSize, this.filteredData.length);
                 const displayData = this.filteredData.slice(start, end);
                 
                 let html = '';
@@ -783,14 +850,18 @@
                     if (simpleMajor.includes('(')) {
                         simpleMajor = simpleMajor.split('(')[0].trim();
                     }
+                    if (simpleMajor.length > 25) {
+                        simpleMajor = simpleMajor.substring(0, 22) + '...';
+                    }
                     
-                    // 转义学校名称中的特殊字符
-                    const safeSchoolName = schoolName.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                    
+                    // 使用 data-* 属性存储学校名称，避免引号问题
                     html += `
-                        <div class="result-card" onclick="app.showDetail('${safeSchoolName}')">
+                        <div class="result-card" data-schoolname="${this.encodeData(schoolName)}" onclick="app.showDetail(this.dataset.schoolname)">
                             <div class="card-header">
-                                <span class="school-name">${this.escapeHtml(schoolName)}</span>
+                                <span class="school-name">
+                                    ${this.escapeHtml(schoolName)}
+                                    ${schoolName === '未知' ? '<span class="unknown-badge">待补充</span>' : ''}
+                                </span>
                                 <span class="batch-badge">${this.escapeHtml(batch.split('(')[0])}</span>
                             </div>
                             <div class="card-info">
@@ -816,33 +887,39 @@
                 }
             }
 
-            showDetail(schoolName) {
+            encodeData(str) {
+                return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            }
+
+            showDetail(encodedSchoolName) {
+                // 解码学校名称
+                const schoolName = encodedSchoolName.replace(/&quot;/g, '"').replace(/&#39;/g, "'");
                 console.log('显示详情 - 学校名称:', schoolName);
                 
-                // 查找该学校的所有记录（精确匹配）
-                const items = this.data.filter(item => item['学校名称'] === schoolName);
+                if (!schoolName || schoolName === '未知') {
+                    this.showToast('该学校信息暂不完整，无法查看详情');
+                    return;
+                }
                 
-                console.log('找到记录数:', items.length);
-                console.log('第一条记录:', items[0]);
+                // 查找该学校的所有记录（精确匹配）
+                let items = this.data.filter(item => item['学校名称'] === schoolName);
+                
+                console.log('精确匹配记录数:', items.length);
+                
+                // 如果没有精确匹配，尝试模糊匹配
+                if (items.length === 0) {
+                    items = this.data.filter(item => 
+                        item['学校名称'] && item['学校名称'].includes(schoolName.replace('（', '(').replace('）', ')'))
+                    );
+                    console.log('模糊匹配记录数:', items.length);
+                }
                 
                 if (items.length === 0) {
-                    // 尝试模糊匹配
-                    const fuzzyItems = this.data.filter(item => 
-                        item['学校名称'] && item['学校名称'].includes(schoolName)
-                    );
-                    console.log('模糊匹配记录数:', fuzzyItems.length);
-                    
-                    if (fuzzyItems.length > 0) {
-                        this.currentDetailSchool = fuzzyItems[0]['学校名称'];
-                        this.showDetail(this.currentDetailSchool);
-                        return;
-                    }
-                    
-                    this.showToast('未找到学校详情');
+                    this.showToast('未找到该校的招生详情');
                     return;
                 }
 
-                this.currentDetailSchool = schoolName;
+                this.currentDetailSchool = items[0]['学校名称'];
                 this.switchTab('detail');
                 
                 const first = items[0];
@@ -851,7 +928,7 @@
                 let detailHtml = `
                     <div class="detail-card">
                         <div class="detail-header">
-                            <h2>${this.escapeHtml(first['学校名称'] || '未知')}</h2>
+                            <h2>${this.escapeHtml(first['学校名称'])}</h2>
                             <span class="detail-batch">${this.escapeHtml(first.招生批次 || '未知')}</span>
                         </div>
                         
@@ -876,26 +953,35 @@
                 
                 // 列出所有招生项目
                 items.forEach((item, index) => {
+                    const plan = item['招生计划'] || '0';
+                    const requirement = item['录取要求'] || '无';
+                    const remark = item['备注'] || '';
+                    
                     detailHtml += `
                         <div class="major-item">
                             <div class="major-name">${index + 1}. ${this.escapeHtml(item['项目/专业'] || '未知')}</div>
-                            <div class="major-detail">📋 计划: ${this.escapeHtml(item['招生计划'] || '0')}</div>
-                            <div class="major-detail">📌 要求: ${this.escapeHtml(item['录取要求'] || '无')}</div>
-                            ${item['备注'] ? `<div class="major-detail">📝 备注: ${this.escapeHtml(item['备注'])}</div>` : ''}
+                            <div class="major-detail">📋 计划: ${this.escapeHtml(plan)}</div>
+                            <div class="major-detail">📌 要求: ${this.escapeHtml(requirement)}</div>
+                            ${remark ? `<div class="major-detail">📝 备注: ${this.escapeHtml(remark)}</div>` : ''}
                         </div>
                     `;
                 });
                 
-                // 添加调试信息
+                // 添加调试信息（可注释掉）
+                // detailHtml += `
+                //             </div>
+                //         </div>
+                //         
+                //         <div class="debug-info">
+                //             <strong>调试信息:</strong><br>
+                //             学校名称: ${JSON.stringify(first['学校名称'])}<br>
+                //             记录数: ${items.length}<br>
+                //             字段: ${Object.keys(first).join(', ')}
+                //         </div>
+                // `;
+                
                 detailHtml += `
                             </div>
-                        </div>
-                        
-                        <div class="debug-info">
-                            <strong>调试信息:</strong><br>
-                            学校名称: ${JSON.stringify(first['学校名称'])}<br>
-                            记录数: ${items.length}<br>
-                            字段: ${Object.keys(first).join(', ')}
                         </div>
                         
                         <button class="back-btn" onclick="app.switchTab('list')">
@@ -956,6 +1042,26 @@
                     `;
                 });
                 statsHtml += '</div>';
+                
+                // 统计"未知"数据的数量
+                const unknownSchools = this.data.filter(item => item['学校名称'] === '未知').length;
+                const unknownRegions = this.data.filter(item => item['所在区域'] === '未知').length;
+                
+                statsHtml += `
+                    <div class="detail-section">
+                        <h3>📊 数据质量</h3>
+                        <div style="background:#f8fafc; padding:16px; border-radius:10px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                                <span>学校名称未知:</span>
+                                <span style="color:#e67e22;">${unknownSchools} 条</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between;">
+                                <span>所在区域未知:</span>
+                                <span style="color:#e67e22;">${unknownRegions} 条</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
                 
                 statsHtml += `
                     <div class="detail-section">
@@ -1040,7 +1146,7 @@
             }
 
             escapeHtml(text) {
-                if (!text) return '';
+                if (!text && text !== 0) return '';
                 return String(text)
                     .replace(/&/g, '&amp;')
                     .replace(/</g, '&lt;')
