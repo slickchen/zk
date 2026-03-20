@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>广州学校招生查询 - 极速版</title>
+    <title>广州学校招生查询 - 完整版</title>
     <style>
-        /* ========== 全局样式 ========== */
         * {
             margin: 0;
             padding: 0;
@@ -26,7 +25,6 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.05);
         }
 
-        /* ========== 头部 ========== */
         .header {
             background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
             color: white;
@@ -55,7 +53,6 @@
             font-size: 0.8rem;
         }
 
-        /* ========== 免责声明 ========== */
         .disclaimer {
             background: #fff3cd;
             border-left: 4px solid #ffc107;
@@ -70,11 +67,6 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
-        .disclaimer-icon {
-            font-size: 1.1rem;
-        }
-
-        /* ========== 搜索区域 ========== */
         .search-section {
             padding: 12px;
             background: white;
@@ -112,11 +104,6 @@
             border-radius: 25px;
             font-size: 1.2rem;
             cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .search-btn:active {
-            background: #2980b9;
         }
 
         .search-type {
@@ -135,7 +122,6 @@
             font-size: 0.8rem;
             color: #4a5568;
             cursor: pointer;
-            transition: all 0.2s;
         }
 
         .type-btn.active {
@@ -144,7 +130,6 @@
             font-weight: 500;
         }
 
-        /* ========== 筛选栏 ========== */
         .filter-bar {
             padding: 8px 12px;
             background: white;
@@ -159,8 +144,7 @@
             border: 1px solid #e0e7ed;
             border-radius: 20px;
             font-size: 0.85rem;
-            background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%234a5568' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 10px center;
-            appearance: none;
+            background: #f8fafc;
         }
 
         .reset-btn {
@@ -174,11 +158,6 @@
             white-space: nowrap;
         }
 
-        .reset-btn:active {
-            background: #e2e8f0;
-        }
-
-        /* ========== 工具栏 ========== */
         .toolbar {
             padding: 8px 12px;
             background: #f8fafc;
@@ -205,52 +184,13 @@
             align-items: center;
             gap: 4px;
             cursor: pointer;
-            transition: background 0.2s;
         }
 
-        .export-btn:active {
-            background: #229954;
-        }
-
-        /* ========== 结果列表 ========== */
         .result-list {
             padding: 12px;
             min-height: 60vh;
         }
 
-        /* 骨架屏加载动画 */
-        .skeleton-card {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-            border: 1px solid #f0f0f0;
-        }
-
-        .skeleton-line {
-            height: 16px;
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-
-        .skeleton-line.short {
-            width: 60%;
-        }
-
-        .skeleton-line.medium {
-            width: 80%;
-        }
-
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        /* 结果卡片 */
         .result-card {
             background: white;
             border-radius: 12px;
@@ -258,7 +198,6 @@
             margin-bottom: 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             border: 1px solid #f0f4f9;
-            transition: transform 0.1s;
             cursor: pointer;
         }
 
@@ -278,7 +217,6 @@
             font-weight: 600;
             font-size: 1rem;
             color: #2c3e50;
-            line-height: 1.4;
         }
 
         .batch-badge {
@@ -288,7 +226,6 @@
             border-radius: 16px;
             font-size: 0.7rem;
             white-space: nowrap;
-            margin-left: 8px;
         }
 
         .card-info {
@@ -297,12 +234,6 @@
             margin-bottom: 6px;
             font-size: 0.8rem;
             color: #718096;
-        }
-
-        .card-info span {
-            display: flex;
-            align-items: center;
-            gap: 4px;
         }
 
         .card-desc {
@@ -325,7 +256,6 @@
             color: #27ae60;
         }
 
-        /* ========== 空状态 ========== */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -335,10 +265,8 @@
         .empty-state .emoji {
             font-size: 3rem;
             margin-bottom: 16px;
-            opacity: 0.5;
         }
 
-        /* ========== 详情页 ========== */
         .detail-card {
             background: white;
             border-radius: 16px;
@@ -357,7 +285,6 @@
             font-size: 1.2rem;
             color: #2c3e50;
             margin-bottom: 8px;
-            line-height: 1.4;
         }
 
         .detail-batch {
@@ -377,9 +304,6 @@
             font-size: 1rem;
             color: #2c3e50;
             margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
         .info-grid {
@@ -418,7 +342,6 @@
             font-weight: 600;
             color: #2c3e50;
             margin-bottom: 6px;
-            font-size: 0.95rem;
         }
 
         .major-detail {
@@ -440,11 +363,6 @@
             margin-top: 12px;
         }
 
-        .back-btn:active {
-            background: #e2e8f0;
-        }
-
-        /* ========== 底部导航 ========== */
         .bottom-nav {
             display: flex;
             background: white;
@@ -477,7 +395,6 @@
             font-size: 1.2rem;
         }
 
-        /* ========== 提示消息 ========== */
         .toast {
             position: fixed;
             bottom: 80px;
@@ -490,10 +407,12 @@
             font-size: 0.85rem;
             z-index: 1000;
             animation: slideUp 0.3s;
-            white-space: nowrap;
-            max-width: 90%;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        }
+
+        .load-more {
+            text-align: center;
+            padding: 16px;
+            color: #a0aec0;
         }
 
         @keyframes slideUp {
@@ -501,90 +420,33 @@
             to { bottom: 80px; opacity: 1; }
         }
 
-        /* ========== 加载更多 ========== */
-        .load-more {
-            text-align: center;
-            padding: 16px;
-            color: #a0aec0;
-            font-size: 0.85rem;
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+            height: 80px;
+            margin-bottom: 10px;
         }
 
-        .infinite-scroll-trigger {
-            height: 20px;
-            margin: 10px 0;
-        }
-
-        /* ========== 暗色模式支持 ========== */
-        @media (prefers-color-scheme: dark) {
-            body {
-                background: #1a202c;
-            }
-            
-            .app {
-                background: #2d3748;
-            }
-            
-            .result-card,
-            .detail-card,
-            .filter-bar,
-            .search-section,
-            .toolbar {
-                background: #2d3748;
-                border-color: #4a5568;
-            }
-            
-            .school-name {
-                color: #e2e8f0;
-            }
-            
-            .card-info,
-            .info-label {
-                color: #a0aec0;
-            }
-            
-            .search-input,
-            .filter-select {
-                background: #4a5568;
-                border-color: #718096;
-                color: #e2e8f0;
-            }
-            
-            .search-input::placeholder {
-                color: #a0aec0;
-            }
-            
-            .type-btn,
-            .reset-btn,
-            .back-btn {
-                background: #4a5568;
-                color: #e2e8f0;
-            }
-            
-            .info-grid,
-            .major-item {
-                background: #4a5568;
-            }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
     </style>
 </head>
 <body>
     <div class="app">
-        <!-- 头部 -->
         <div class="header">
-            <h1>
-                <span>📚</span>
-                广州学校招生
-            </h1>
+            <h1>📚 广州学校招生</h1>
             <div class="header-stats" id="headerStats">加载中...</div>
         </div>
 
-        <!-- 免责声明 -->
         <div class="disclaimer">
             <span class="disclaimer-icon">⚠️</span>
             <span>数据仅供参考，请以官方发布为准</span>
         </div>
 
-        <!-- 搜索区域 -->
         <div class="search-section">
             <div class="search-box">
                 <input type="text" id="searchInput" class="search-input" placeholder="输入学校或专业..." autocomplete="off">
@@ -598,7 +460,6 @@
             </div>
         </div>
 
-        <!-- 筛选栏 -->
         <div class="filter-bar">
             <select class="filter-select" id="batchFilter">
                 <option value="all">📦 全部批次</option>
@@ -609,7 +470,6 @@
             <button class="reset-btn" id="resetBtn">重置</button>
         </div>
 
-        <!-- 工具栏 -->
         <div class="toolbar">
             <span class="result-count" id="resultCount">0 条记录</span>
             <button class="export-btn" id="exportBtn">
@@ -618,10 +478,16 @@
             </button>
         </div>
 
-        <!-- 内容区域 -->
-        <div id="contentArea"></div>
+        <div id="contentArea">
+            <div class="result-list">
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+            </div>
+        </div>
 
-        <!-- 底部导航 -->
         <div class="bottom-nav">
             <button class="nav-btn active" data-tab="list">
                 <span class="emoji">📋</span>
@@ -640,399 +506,163 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
-        // ========== 配置 ==========
-        const CONFIG = {
-            PAGE_SIZE: 20,              // 每页加载20条
-            PRELOAD_PAGES: 2,           // 预加载2页
-            CACHE_KEY: 'schoolData',     // 缓存key
-            CACHE_EXPIRE: 24 * 60 * 60 * 1000, // 缓存24小时
-            DEBOUNCE_DELAY: 300          // 防抖延迟
-        };
-
-        // ========== 数据管理器 ==========
-        class DataManager {
+        // ========== 数据加载器 ==========
+        class DataLoader {
             constructor() {
-                this.rawData = [];
-                this.filteredData = [];
-                this.currentPage = 1;
-                this.isLoading = false;
-                this.hasMore = true;
-                this.searchType = 'school';
-                this.searchKeyword = '';
-                this.batchFilter = 'all';
-                this.regionFilter = 'all';
-                this.observers = [];
+                this.files = [
+                    { name: 'batch1-hk.json', batch: '第一批次(港澳子弟班)' },
+                    { name: 'batch1-talent.json', batch: '第一批次(特长生)' },
+                    { name: 'batch1-self.json', batch: '第一批次(自主招生)' },
+                    { name: 'batch1-art.json', batch: '第一批次(外语艺术)' },
+                    { name: 'batch1-zb.json', batch: '第一批次(中本贯通)' },
+                    { name: 'batch1-32.json', batch: '第一批次(三二分段)' },
+                    { name: 'batch1-32-2.json', batch: '第一批次(三二分段)' },
+                    { name: 'batch2.json', batch: '第二批次' },
+                    { name: 'batch3.json', batch: '第三批次' },
+                    { name: 'batch4-high.json', batch: '第四批次(普通高中)' },
+                    { name: 'batch4-secondary.json', batch: '第四批次(中职中专)' },
+                    { name: 'batch4-tech.json', batch: '第四批次(技工学校)' }
+                ];
+                this.allData = [];
             }
 
-            // 初始化数据
-            async init() {
-                this.showLoading();
+            async loadAll() {
+                const baseUrl = 'https://raw.githubusercontent.com/slickchen/zk/main/js/data/';
                 
-                // 尝试从缓存加载
-                const cached = this.loadFromCache();
-                if (cached) {
-                    this.rawData = cached;
-                    this.filteredData = [...cached];
-                    this.renderInitial();
-                    this.hideLoading();
-                } else {
-                    // 首次加载少量数据
-                    await this.loadSampleData();
-                }
-                
-                // 后台加载完整数据
-                this.loadFullDataInBackground();
-            }
-
-            // 加载示例数据（快速显示）
-            loadSampleData() {
-                this.rawData = SAMPLE_DATA;
-                this.filteredData = [...SAMPLE_DATA];
-                this.renderInitial();
-                this.hideLoading();
-            }
-
-            // 后台加载完整数据
-            async loadFullDataInBackground() {
-                try {
-                    // 这里可以加载完整的JSON数据
-                    // 为了示例，我们使用扩展数据
-                    setTimeout(() => {
-                        this.rawData = [...SAMPLE_DATA, ...EXTENDED_DATA];
-                        this.filteredData = this.filterData();
-                        this.saveToCache(this.rawData);
-                        this.notifyObservers();
-                    }, 2000);
-                } catch (e) {
-                    console.warn('加载完整数据失败', e);
-                }
-            }
-
-            // 保存到缓存
-            saveToCache(data) {
-                try {
-                    const cacheData = {
-                        timestamp: Date.now(),
-                        data: data
-                    };
-                    localStorage.setItem(CONFIG.CACHE_KEY, JSON.stringify(cacheData));
-                } catch (e) {
-                    console.warn('缓存失败', e);
-                }
-            }
-
-            // 从缓存加载
-            loadFromCache() {
-                try {
-                    const cached = localStorage.getItem(CONFIG.CACHE_KEY);
-                    if (!cached) return null;
-                    
-                    const { timestamp, data } = JSON.parse(cached);
-                    if (Date.now() - timestamp > CONFIG.CACHE_EXPIRE) {
-                        localStorage.removeItem(CONFIG.CACHE_KEY);
-                        return null;
-                    }
-                    
-                    return data;
-                } catch (e) {
-                    return null;
-                }
-            }
-
-            // 过滤数据
-            filterData() {
-                return this.rawData.filter(item => {
-                    // 批次筛选
-                    if (this.batchFilter !== 'all' && item.批次 !== this.batchFilter) return false;
-                    
-                    // 区域筛选
-                    if (this.regionFilter !== 'all' && item.区域 !== this.regionFilter) return false;
-                    
-                    // 搜索关键词
-                    if (this.searchKeyword) {
-                        const keyword = this.searchKeyword.toLowerCase();
-                        switch(this.searchType) {
-                            case 'school':
-                                if (!item.学校.toLowerCase().includes(keyword)) return false;
-                                break;
-                            case 'major':
-                                if (!item.专业.toLowerCase().includes(keyword)) return false;
-                                break;
-                            case 'region':
-                                if (!item.区域.toLowerCase().includes(keyword)) return false;
-                                break;
-                            case 'batch':
-                                if (!item.批次.toLowerCase().includes(keyword)) return false;
-                                break;
+                for (const file of this.files) {
+                    try {
+                        const response = await fetch(baseUrl + file.name);
+                        if (!response.ok) {
+                            console.warn(`加载 ${file.name} 失败: ${response.status}`);
+                            continue;
                         }
+                        const data = await response.json();
+                        
+                        // 添加批次信息
+                        const batchData = data.map(item => ({
+                            ...item,
+                            批次: file.batch
+                        }));
+                        
+                        this.allData = this.allData.concat(batchData);
+                        console.log(`✅ 已加载 ${file.name}: ${batchData.length}条`);
+                        
+                    } catch (error) {
+                        console.warn(`加载 ${file.name} 出错:`, error);
                     }
-                    
-                    return true;
-                });
-            }
-
-            // 获取当前页数据
-            getCurrentPageData() {
-                const start = 0;
-                const end = this.currentPage * CONFIG.PAGE_SIZE;
-                return this.filteredData.slice(start, end);
-            }
-
-            // 加载更多
-            loadMore() {
-                if (this.isLoading || !this.hasMore) return;
-                
-                this.isLoading = true;
-                this.currentPage++;
-                
-                if (this.currentPage * CONFIG.PAGE_SIZE >= this.filteredData.length) {
-                    this.hasMore = false;
                 }
                 
-                this.isLoading = false;
-                this.notifyObservers();
-            }
-
-            // 重置分页
-            resetPagination() {
-                this.currentPage = 1;
-                this.hasMore = true;
-            }
-
-            // 更新过滤条件
-            updateFilters(type, value) {
-                switch(type) {
-                    case 'searchType':
-                        this.searchType = value;
-                        break;
-                    case 'searchKeyword':
-                        this.searchKeyword = value;
-                        break;
-                    case 'batch':
-                        this.batchFilter = value;
-                        break;
-                    case 'region':
-                        this.regionFilter = value;
-                        break;
-                }
-                
-                this.filteredData = this.filterData();
-                this.resetPagination();
-                this.notifyObservers();
-            }
-
-            // 重置所有
-            reset() {
-                this.searchType = 'school';
-                this.searchKeyword = '';
-                this.batchFilter = 'all';
-                this.regionFilter = 'all';
-                this.filteredData = [...this.rawData];
-                this.resetPagination();
-                this.notifyObservers();
-            }
-
-            // 观察者模式
-            subscribe(observer) {
-                this.observers.push(observer);
-            }
-
-            notifyObservers() {
-                this.observers.forEach(observer => observer(this));
-            }
-
-            showLoading() {
-                document.getElementById('contentArea').innerHTML = this.renderSkeleton();
-            }
-
-            hideLoading() {
-                // 由观察者处理
-            }
-
-            renderSkeleton() {
-                let html = '<div class="result-list">';
-                for (let i = 0; i < 6; i++) {
-                    html += `
-                        <div class="skeleton-card">
-                            <div class="skeleton-line short"></div>
-                            <div class="skeleton-line medium"></div>
-                            <div class="skeleton-line"></div>
-                        </div>
-                    `;
-                }
-                html += '</div>';
-                return html;
-            }
-
-            renderInitial() {
-                this.notifyObservers();
+                return this.allData;
             }
         }
 
-        // ========== 示例数据 ==========
-        const SAMPLE_DATA = [
-            {
-                "批次": "第一批次(港澳子弟班)",
-                "学校": "广东华侨中学（港澳子弟班）",
-                "类型": "公办 国家级示范性",
-                "区域": "白云区",
-                "专业": "港澳子弟班",
-                "计划": "250",
-                "要求": "普通高中录取最低控制线",
-                "住宿": "总宿位710个",
-                "电话": "020-81798120"
-            },
-            {
-                "批次": "第一批次(港澳子弟班)",
-                "学校": "广州市培英中学（鹤洞校区）（港澳子弟班）",
-                "类型": "公办 国家级示范性",
-                "区域": "荔湾区",
-                "专业": "港澳子弟班",
-                "计划": "200",
-                "要求": "普通高中录取最低控制线",
-                "住宿": "总宿位550个",
-                "电话": "020-81679523"
-            },
-            {
-                "批次": "第一批次(自主招生)",
-                "学校": "华南师范大学附属中学（石牌校区）",
-                "类型": "公办 国家级示范性",
-                "区域": "天河区",
-                "专业": "自主招生",
-                "计划": "35",
-                "要求": "第一梯度控制线 等级:4B",
-                "住宿": "总宿位346个",
-                "电话": "020-38630710"
-            },
-            {
-                "批次": "第一批次(自主招生)",
-                "学校": "广东实验中学（荔湾校区）",
-                "类型": "公办 国家级示范性",
-                "区域": "荔湾区",
-                "专业": "自主招生",
-                "计划": "67",
-                "要求": "第一梯度控制线 等级:4C",
-                "住宿": "总宿位670个",
-                "电话": "020-81505108"
-            },
-            {
-                "批次": "第一批次(特长生)",
-                "学校": "华南师范大学附属中学（石牌校区）",
-                "类型": "公办 国家级示范性",
-                "区域": "天河区",
-                "专业": "合唱",
-                "计划": "12",
-                "要求": "第二梯度控制线",
-                "住宿": "总宿位346个",
-                "电话": "020-38630710"
-            },
-            {
-                "批次": "第一批次(外语艺术)",
-                "学校": "广州市艺术中学（越秀校区）",
-                "类型": "公办 其他普通高中",
-                "区域": "越秀区",
-                "专业": "美术",
-                "计划": "300",
-                "要求": "录取最低控制线",
-                "住宿": "无住宿",
-                "电话": "020-83838509"
-            },
-            {
-                "批次": "第一批次(中本贯通)",
-                "学校": "广州市交通运输职业学校",
-                "类型": "中职 国家级重点",
-                "区域": "增城区",
-                "专业": "新能源汽车运用与维修 (3+4)",
-                "计划": "20",
-                "要求": "对口:广州航海学院",
-                "住宿": "1000元/年",
-                "电话": "020-86092539"
-            },
-            {
-                "批次": "第三批次",
-                "学校": "华南师范大学附属中学（石牌校区）",
-                "类型": "公办 国家级示范性",
-                "区域": "天河区",
-                "专业": "普通高中",
-                "计划": "94",
-                "要求": "统一划定",
-                "住宿": "总宿位346个",
-                "电话": "020-38630710"
-            },
-            {
-                "批次": "第四批次",
-                "学校": "广州市西关培英中学",
-                "类型": "公办 其他普通高中",
-                "区域": "荔湾区",
-                "专业": "普通高中",
-                "计划": "198",
-                "要求": "统一划定",
-                "住宿": "总宿位70个",
-                "电话": "020-81703023"
-            }
-        ];
-
-        const EXTENDED_DATA = [
-            // 可以在这里添加更多数据
-        ];
-
-        // ========== UI 渲染器 ==========
-        class UIRenderer {
-            constructor(dataManager) {
-                this.dataManager = dataManager;
+        // ========== 应用逻辑 ==========
+        class SchoolQueryApp {
+            constructor() {
+                this.data = [];
+                this.filteredData = [];
                 this.currentDetailSchool = null;
-                this.initEventListeners();
-                this.initFilters();
+                this.searchType = 'school';
+                this.searchKeyword = '';
+                this.batchFilter = 'all';
+                this.regionFilter = 'all';
+                this.pageSize = 50;
+                this.currentPage = 1;
+                
+                this.init();
             }
 
-            // 初始化事件监听
-            initEventListeners() {
-                // 搜索输入防抖
+            async init() {
+                await this.loadData();
+                this.initFilters();
+                this.bindEvents();
+                this.renderList();
+            }
+
+            async loadData() {
+                const loader = new DataLoader();
+                this.data = await loader.loadAll();
+                this.filteredData = [...this.data];
+                
+                document.getElementById('headerStats').textContent = `共${this.data.length}条`;
+                console.log(`总数据: ${this.data.length}条`);
+            }
+
+            initFilters() {
+                const batches = [...new Set(this.data.map(item => item.批次))];
+                const regions = [...new Set(this.data.map(item => item.区域).filter(Boolean))];
+
+                const batchSelect = document.getElementById('batchFilter');
+                batches.sort().forEach(batch => {
+                    const option = document.createElement('option');
+                    option.value = batch;
+                    option.textContent = batch;
+                    batchSelect.appendChild(option);
+                });
+
+                const regionSelect = document.getElementById('regionFilter');
+                regions.sort().forEach(region => {
+                    const option = document.createElement('option');
+                    option.value = region;
+                    option.textContent = region;
+                    regionSelect.appendChild(option);
+                });
+            }
+
+            bindEvents() {
                 let debounceTimer;
                 document.getElementById('searchInput').addEventListener('input', (e) => {
                     clearTimeout(debounceTimer);
                     debounceTimer = setTimeout(() => {
-                        this.dataManager.updateFilters('searchKeyword', e.target.value);
-                    }, CONFIG.DEBOUNCE_DELAY);
+                        this.searchKeyword = e.target.value;
+                        this.currentPage = 1;
+                        this.applyFilters();
+                    }, 300);
                 });
 
-                // 搜索按钮
                 document.getElementById('searchBtn').addEventListener('click', () => {
-                    const keyword = document.getElementById('searchInput').value;
-                    this.dataManager.updateFilters('searchKeyword', keyword);
+                    this.applyFilters();
                 });
 
-                // 搜索类型切换
                 document.querySelectorAll('.type-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
                         e.target.classList.add('active');
-                        this.dataManager.updateFilters('searchType', e.target.dataset.type);
+                        this.searchType = e.target.dataset.type;
+                        this.currentPage = 1;
+                        this.applyFilters();
                     });
                 });
 
-                // 筛选器
                 document.getElementById('batchFilter').addEventListener('change', (e) => {
-                    this.dataManager.updateFilters('batch', e.target.value);
+                    this.batchFilter = e.target.value;
+                    this.currentPage = 1;
+                    this.applyFilters();
                 });
 
                 document.getElementById('regionFilter').addEventListener('change', (e) => {
-                    this.dataManager.updateFilters('region', e.target.value);
+                    this.regionFilter = e.target.value;
+                    this.currentPage = 1;
+                    this.applyFilters();
                 });
 
-                // 重置按钮
                 document.getElementById('resetBtn').addEventListener('click', () => {
                     document.getElementById('searchInput').value = '';
                     document.getElementById('batchFilter').value = 'all';
                     document.getElementById('regionFilter').value = 'all';
                     document.querySelector('.type-btn[data-type="school"]').click();
-                    this.dataManager.reset();
+                    
+                    this.searchKeyword = '';
+                    this.batchFilter = 'all';
+                    this.regionFilter = 'all';
+                    this.searchType = 'school';
+                    this.currentPage = 1;
+                    this.filteredData = [...this.data];
+                    this.renderList();
                 });
 
-                // 导出按钮
                 document.getElementById('exportBtn').addEventListener('click', () => this.exportData());
 
-                // 底部导航
                 document.querySelectorAll('.nav-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -1042,110 +672,106 @@
                 });
 
                 // 无限滚动
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting && this.dataManager.hasMore) {
-                            this.dataManager.loadMore();
+                window.addEventListener('scroll', () => {
+                    const scrollHeight = document.documentElement.scrollHeight;
+                    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+                    const clientHeight = document.documentElement.clientHeight;
+                    
+                    if (scrollHeight - scrollTop - clientHeight < 100) {
+                        if (this.currentPage * this.pageSize < this.filteredData.length) {
+                            this.currentPage++;
+                            this.renderList(true);
                         }
-                    });
-                });
-
-                const trigger = document.createElement('div');
-                trigger.className = 'infinite-scroll-trigger';
-                document.getElementById('contentArea').appendChild(trigger);
-                observer.observe(trigger);
-
-                // 订阅数据变化
-                this.dataManager.subscribe((data) => this.render(data));
-            }
-
-            // 初始化筛选器选项
-            initFilters() {
-                const batches = [...new Set(this.dataManager.rawData.map(item => item.批次))];
-                const regions = [...new Set(this.dataManager.rawData.map(item => item.区域))];
-
-                const batchSelect = document.getElementById('batchFilter');
-                batches.forEach(batch => {
-                    const option = document.createElement('option');
-                    option.value = batch;
-                    option.textContent = batch;
-                    batchSelect.appendChild(option);
-                });
-
-                const regionSelect = document.getElementById('regionFilter');
-                regions.forEach(region => {
-                    const option = document.createElement('option');
-                    option.value = region;
-                    option.textContent = region;
-                    regionSelect.appendChild(option);
+                    }
                 });
             }
 
-            // 渲染主界面
-            render(dataManager) {
-                const data = dataManager.getCurrentPageData();
-                const total = dataManager.filteredData.length;
+            applyFilters() {
+                this.filteredData = this.data.filter(item => {
+                    if (this.batchFilter !== 'all' && item.批次 !== this.batchFilter) return false;
+                    if (this.regionFilter !== 'all' && item.区域 !== this.regionFilter) return false;
+                    
+                    if (this.searchKeyword) {
+                        const keyword = this.searchKeyword.toLowerCase();
+                        switch(this.searchType) {
+                            case 'school':
+                                if (!item.学校?.toLowerCase().includes(keyword)) return false;
+                                break;
+                            case 'major':
+                                if (!item.专业?.toLowerCase().includes(keyword)) return false;
+                                break;
+                            case 'region':
+                                if (!item.区域?.toLowerCase().includes(keyword)) return false;
+                                break;
+                            case 'batch':
+                                if (!item.批次?.toLowerCase().includes(keyword)) return false;
+                                break;
+                        }
+                    }
+                    return true;
+                });
                 
-                // 更新统计
-                document.getElementById('resultCount').textContent = `${total} 条记录`;
-                document.getElementById('headerStats').textContent = `共${dataManager.rawData.length}条`;
-
-                // 渲染列表
-                if (data.length === 0) {
-                    this.renderEmpty();
-                } else {
-                    this.renderList(data);
-                }
+                this.currentPage = 1;
+                this.renderList();
             }
 
-            // 渲染列表
-            renderList(data) {
+            renderList(append = false) {
+                const container = document.getElementById('contentArea');
+                document.getElementById('resultCount').textContent = `${this.filteredData.length} 条记录`;
+                
+                if (this.filteredData.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="emoji">🔍</div>
+                            <div>没有找到相关记录</div>
+                            <div style="font-size:0.8rem; margin-top:8px;">试试其他关键词</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const start = 0;
+                const end = this.currentPage * this.pageSize;
+                const displayData = this.filteredData.slice(start, end);
+                
                 let html = '<div class="result-list">';
                 
-                data.forEach(item => {
+                displayData.forEach(item => {
                     html += `
-                        <div class="result-card" onclick="renderer.showDetail('${item.学校.replace(/'/g, "\\'")}')">
+                        <div class="result-card" onclick="app.showDetail('${item.学校?.replace(/'/g, "\\'") || ''}')">
                             <div class="card-header">
-                                <span class="school-name">${this.escapeHtml(item.学校)}</span>
-                                <span class="batch-badge">${this.escapeHtml(item.批次.split('(')[0])}</span>
+                                <span class="school-name">${this.escapeHtml(item.学校 || '未知')}</span>
+                                <span class="batch-badge">${this.escapeHtml((item.批次 || '').split('(')[0])}</span>
                             </div>
                             <div class="card-info">
-                                <span>📍 ${this.escapeHtml(item.区域)}</span>
-                                <span>🏫 ${this.escapeHtml(item.类型.split(' ')[0])}</span>
+                                <span>📍 ${this.escapeHtml(item.区域 || '未知')}</span>
+                                <span>🏫 ${this.escapeHtml((item.类型 || '').split(' ')[0])}</span>
                             </div>
                             <div class="card-desc">
-                                <span class="major">📖 ${this.escapeHtml(item.专业)}</span>
-                                <span class="plan">👥 ${this.escapeHtml(item.计划)}</span>
+                                <span class="major">📖 ${this.escapeHtml(item.专业 || '未知')}</span>
+                                <span class="plan">👥 ${this.escapeHtml(item.计划 || '0')}</span>
                             </div>
                         </div>
                     `;
                 });
 
-                // 加载更多提示
-                if (this.dataManager.hasMore) {
-                    html += '<div class="load-more">下拉加载更多...</div>';
-                } else if (this.dataManager.filteredData.length > CONFIG.PAGE_SIZE) {
-                    html += '<div class="load-more">已显示全部内容</div>';
+                if (this.filteredData.length > end) {
+                    html += `<div class="load-more">下拉加载更多...</div>`;
+                } else if (this.filteredData.length > this.pageSize) {
+                    html += `<div class="load-more">已显示全部 ${this.filteredData.length} 条</div>`;
                 }
 
                 html += '</div>';
-                document.getElementById('contentArea').innerHTML = html;
+                
+                if (append) {
+                    container.innerHTML += html;
+                } else {
+                    container.innerHTML = html;
+                }
             }
 
-            // 渲染空状态
-            renderEmpty() {
-                document.getElementById('contentArea').innerHTML = `
-                    <div class="empty-state">
-                        <div class="emoji">🔍</div>
-                        <div>没有找到相关记录</div>
-                        <div style="font-size:0.8rem; margin-top:8px;">试试其他关键词</div>
-                    </div>
-                `;
-            }
-
-            // 显示详情
             showDetail(schoolName) {
-                const items = this.dataManager.rawData.filter(item => item.学校 === schoolName);
+                const items = this.data.filter(item => item.学校 === schoolName);
                 if (items.length === 0) return;
 
                 this.currentDetailSchool = schoolName;
@@ -1157,10 +783,11 @@
                 items.forEach((item, index) => {
                     majorList += `
                         <div class="major-item">
-                            <div class="major-name">${index + 1}. ${this.escapeHtml(item.专业)}</div>
-                            <div class="major-detail">计划: ${this.escapeHtml(item.计划)} 人</div>
-                            <div class="major-detail">要求: ${this.escapeHtml(item.要求)}</div>
+                            <div class="major-name">${index + 1}. ${this.escapeHtml(item.专业 || '未知')}</div>
+                            <div class="major-detail">计划: ${this.escapeHtml(item.计划 || '0')} 人</div>
+                            <div class="major-detail">要求: ${this.escapeHtml(item.要求 || '无')}</div>
                             ${item.住宿 ? `<div class="major-detail">住宿: ${this.escapeHtml(item.住宿)}</div>` : ''}
+                            ${item.电话 ? `<div class="major-detail">电话: ${this.escapeHtml(item.电话)}</div>` : ''}
                         </div>
                     `;
                 });
@@ -1168,17 +795,17 @@
                 const detailHtml = `
                     <div class="detail-card">
                         <div class="detail-header">
-                            <h2>${this.escapeHtml(first.学校)}</h2>
-                            <span class="detail-batch">${this.escapeHtml(first.批次)}</span>
+                            <h2>${this.escapeHtml(first.学校 || '未知')}</h2>
+                            <span class="detail-batch">${this.escapeHtml(first.批次 || '未知')}</span>
                         </div>
                         
                         <div class="detail-section">
                             <h3>🏫 基本信息</h3>
                             <div class="info-grid">
                                 <span class="info-label">学校类型</span>
-                                <span class="info-value">${this.escapeHtml(first.类型)}</span>
+                                <span class="info-value">${this.escapeHtml(first.类型 || '未知')}</span>
                                 <span class="info-label">所在区域</span>
-                                <span class="info-value">${this.escapeHtml(first.区域)}</span>
+                                <span class="info-value">${this.escapeHtml(first.区域 || '未知')}</span>
                                 <span class="info-label">联系电话</span>
                                 <span class="info-value">${this.escapeHtml(first.电话 || '暂无')}</span>
                                 <span class="info-label">住宿情况</span>
@@ -1193,7 +820,7 @@
                             </div>
                         </div>
 
-                        <button class="back-btn" onclick="renderer.switchTab('list')">
+                        <button class="back-btn" onclick="app.switchTab('list')">
                             <span>←</span>
                             返回列表
                         </button>
@@ -1203,40 +830,25 @@
                 document.getElementById('contentArea').innerHTML = detailHtml;
             }
 
-            // 切换标签页
-            switchTab(tab) {
-                if (tab === 'list') {
-                    this.render(this.dataManager);
-                } else if (tab === 'detail') {
-                    if (this.currentDetailSchool) {
-                        this.showDetail(this.currentDetailSchool);
-                    } else {
-                        document.getElementById('contentArea').innerHTML = `
-                            <div class="empty-state">
-                                <div class="emoji">👆</div>
-                                <div>点击搜索结果查看详情</div>
-                            </div>
-                        `;
-                    }
-                } else if (tab === 'stats') {
-                    this.renderStats();
-                }
-            }
-
-            // 渲染统计
             renderStats() {
                 const batchStats = {};
                 const regionStats = {};
+                const typeStats = {};
                 
-                this.dataManager.rawData.forEach(item => {
-                    batchStats[item.批次] = (batchStats[item.批次] || 0) + 1;
-                    regionStats[item.区域] = (regionStats[item.区域] || 0) + 1;
+                this.data.forEach(item => {
+                    const batch = item.批次 || '未知';
+                    const region = item.区域 || '未知';
+                    const type = item.类型 ? item.类型.split(' ')[0] : '未知';
+                    
+                    batchStats[batch] = (batchStats[batch] || 0) + 1;
+                    regionStats[region] = (regionStats[region] || 0) + 1;
+                    typeStats[type] = (typeStats[type] || 0) + 1;
                 });
 
                 let statsHtml = '<div class="detail-card">';
                 
                 statsHtml += '<div class="detail-section"><h3>📦 按批次统计</h3>';
-                Object.entries(batchStats).forEach(([batch, count]) => {
+                Object.entries(batchStats).sort((a,b) => b[1] - a[1]).forEach(([batch, count]) => {
                     statsHtml += `
                         <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed #eee;">
                             <span>${batch}</span>
@@ -1257,40 +869,66 @@
                 });
                 statsHtml += '</div>';
                 
+                statsHtml += '<div class="detail-section"><h3>🏫 按学校类型统计</h3>';
+                Object.entries(typeStats).sort((a,b) => b[1] - a[1]).slice(0, 10).forEach(([type, count]) => {
+                    statsHtml += `
+                        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed #eee;">
+                            <span>${type}</span>
+                            <span style="color:#e67e22; font-weight:500;">${count} 条</span>
+                        </div>
+                    `;
+                });
+                statsHtml += '</div>';
+                
                 statsHtml += `
                     <div class="detail-section">
                         <h3>📊 总计</h3>
                         <div style="text-align:center; padding:20px; background:#f8fafc; border-radius:10px;">
-                            <span style="font-size:2rem; color:#3498db;">${this.dataManager.rawData.length}</span>
+                            <span style="font-size:2rem; color:#3498db;">${this.data.length}</span>
                             <span style="color:#666; display:block;">总记录数</span>
                         </div>
                     </div>
                 `;
                 
                 statsHtml += '</div>';
-                
                 document.getElementById('contentArea').innerHTML = statsHtml;
             }
 
-            // 导出数据
+            switchTab(tab) {
+                if (tab === 'list') {
+                    this.renderList();
+                } else if (tab === 'detail') {
+                    if (this.currentDetailSchool) {
+                        this.showDetail(this.currentDetailSchool);
+                    } else {
+                        document.getElementById('contentArea').innerHTML = `
+                            <div class="empty-state">
+                                <div class="emoji">👆</div>
+                                <div>点击搜索结果查看详情</div>
+                            </div>
+                        `;
+                    }
+                } else if (tab === 'stats') {
+                    this.renderStats();
+                }
+            }
+
             exportData() {
-                const data = this.dataManager.filteredData;
-                if (data.length === 0) {
+                if (this.filteredData.length === 0) {
                     this.showToast('没有可导出的数据');
                     return;
                 }
 
-                const ws = XLSX.utils.json_to_sheet(data);
+                const ws = XLSX.utils.json_to_sheet(this.filteredData);
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, '招生计划');
                 
                 const filename = `广州学校招生_${new Date().toISOString().slice(0,10)}.xlsx`;
                 XLSX.writeFile(wb, filename);
                 
-                this.showToast(`已导出 ${data.length} 条记录`);
+                this.showToast(`已导出 ${this.filteredData.length} 条记录`);
             }
 
-            // 显示提示
             showToast(message) {
                 const toast = document.createElement('div');
                 toast.className = 'toast';
@@ -1299,7 +937,6 @@
                 setTimeout(() => toast.remove(), 2000);
             }
 
-            // 转义HTML
             escapeHtml(text) {
                 if (!text) return '';
                 const div = document.createElement('div');
@@ -1308,10 +945,8 @@
             }
         }
 
-        // ========== 初始化 ==========
-        const dataManager = new DataManager();
-        const renderer = new UIRenderer(dataManager);
-        dataManager.init();
+        // ========== 启动应用 ==========
+        const app = new SchoolQueryApp();
     </script>
 </body>
 </html>
